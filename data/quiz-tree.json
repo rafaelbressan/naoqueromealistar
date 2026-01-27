@@ -1,0 +1,1012 @@
+{
+  "P1": {
+    "id": "P1",
+    "pergunta": "Você é mulher cisgênero?",
+    "explicacao": "Nasceu mulher e se identifica como mulher",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_DISPENSADA",
+        "razao": "Mulheres não são obrigadas ao serviço militar em tempo de paz",
+        "base_legal": "Art. 5º do Decreto 57.654/1966",
+        "tipo_dispensa": "Isenção automática"
+      },
+      "nao": {
+        "proximo": "P2"
+      }
+    }
+  },
+  "P2": {
+    "id": "P2",
+    "pergunta": "Você é uma mulher transgênero?",
+    "explicacao": "Nasceu com sexo masculino mas se identifica como mulher",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_DISPENSADA",
+        "razao": "Mulheres trans são dispensadas do alistamento, independente de cirurgia",
+        "base_legal": "Portaria 326-DGP/2019",
+        "tipo_dispensa": "Dispensa do alistamento"
+      },
+      "nao": {
+        "proximo": "P3"
+      }
+    }
+  },
+  "P3": {
+    "id": "P3",
+    "pergunta": "Você é homem transgênero?",
+    "explicacao": "Nasceu com sexo feminino mas se identifica como homem",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_DISPENSADO",
+        "razao": "O alistamento obrigatório se aplica apenas a quem foi designado sexo masculino ao nascer. Homens trans podem se voluntariar.",
+        "base_legal": "Art. 5º do Decreto 57.654/1966 + interpretação",
+        "tipo_dispensa": "Isenção (pode voluntariar-se)"
+      },
+      "nao": {
+        "proximo": "P4"
+      }
+    }
+  },
+  "P4": {
+    "id": "P4",
+    "pergunta": "Você já tem mais de 30 anos?",
+    "explicacao": "Passou dos 30 e nunca se alistou? Calma...",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_EXCESSO_CONTINGENTE",
+        "razao": "Brasileiros com mais de 30 anos são automaticamente incluídos no excesso de contingente, mas ainda precisam regularizar a situação militar",
+        "base_legal": "Art. 93, §2º, nº 3 do Decreto 57.654/1966",
+        "tipo_dispensa": "Excesso de contingente",
+        "nota": "Você ainda precisa comparecer à JSM para regularizar e pode ter multas pendentes"
+      },
+      "nao": {
+        "proximo": "P5"
+      }
+    }
+  },
+  "P5": {
+    "id": "P5",
+    "pergunta": "Você mora fora do Brasil há mais de 1 ano?",
+    "explicacao": "Tá vivendo a vida de gringo?",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ADIAMENTO",
+        "razao": "Brasileiros residentes no exterior têm a incorporação adiada enquanto durar a residência",
+        "base_legal": "Art. 96, §4º e §5º do Decreto 57.654/1966",
+        "tipo_dispensa": "Adiamento de incorporação",
+        "nota": "Você ainda precisa se alistar no Consulado brasileiro e se apresentar anualmente"
+      },
+      "nao": {
+        "proximo": "P6"
+      }
+    }
+  },
+  "P6": {
+    "id": "P6",
+    "pergunta": "Você mora em uma cidade BEM pequena do interior?",
+    "explicacao": "Tipo, cidade que não tem nem agência bancária, sabe? Provavelmente não tem quartel nem nada militar por perto",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "proximo": "P6_1"
+      },
+      "nao": {
+        "proximo": "P7"
+      }
+    }
+  },
+  "P6_1": {
+    "id": "P6_1",
+    "pergunta": "Você mora nessa cidade há mais de 1 ano?",
+    "explicacao": "Contando a partir da data de seleção da sua classe",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_DISPENSADO",
+        "razao": "Residentes há mais de 1 ano em município não tributário são dispensados de incorporação",
+        "base_legal": "Art. 105, nº 1 do Decreto 57.654/1966",
+        "tipo_dispensa": "Dispensa de incorporação",
+        "dica": "Você precisa de um Atestado de Residência da autoridade policial local"
+      },
+      "nao": {
+        "proximo": "P7"
+      }
+    }
+  },
+  "P7": {
+    "id": "P7",
+    "pergunta": "Você mora na zona RURAL de alguma cidade?",
+    "explicacao": "Área rural mesmo, não é só bairro afastado. Sítio, fazenda, comunidade rural...",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "proximo": "P7_1"
+      },
+      "nao": {
+        "proximo": "P8"
+      }
+    }
+  },
+  "P7_1": {
+    "id": "P7_1",
+    "pergunta": "Você mora nessa zona rural há mais de 1 ano?",
+    "explicacao": "Contando a partir da data de seleção da sua classe",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_DISPENSADO",
+        "razao": "Residentes há mais de 1 ano em zona rural de município tributário de OFR são dispensados",
+        "base_legal": "Art. 105, nº 1 do Decreto 57.654/1966",
+        "tipo_dispensa": "Dispensa de incorporação",
+        "dica": "Você precisa de um Atestado de Residência"
+      },
+      "nao": {
+        "proximo": "P8"
+      }
+    }
+  },
+  "P8": {
+    "id": "P8",
+    "pergunta": "Você é o ÚNICO responsável pelo sustento da sua família?",
+    "explicacao": "Sem você trabalhando, sua família não teria como se manter. Não vale se seus pais trabalham também, mesmo que informalmente",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "proximo": "P8_1"
+      },
+      "nao": {
+        "proximo": "P9"
+      }
+    }
+  },
+  "P8_1": {
+    "id": "P8_1",
+    "pergunta": "Quem você sustenta?",
+    "explicacao": "Selecione a opção que melhor descreve sua situação",
+    "tipo": "selecao_unica",
+    "respostas": {
+      "A": {
+        "resultado": "FIM_DISPENSADO_ARRIMO",
+        "razao": "Filho único que serve de esteio à mãe",
+        "base_legal": "Art. 105, §8º, nº 1 do Decreto 57.654/1966"
+      },
+      "B": {
+        "resultado": "FIM_DISPENSADO_ARRIMO",
+        "razao": "Filho que sustenta pai incapaz",
+        "base_legal": "Art. 105, §8º, nº 2 do Decreto 57.654/1966"
+      },
+      "C": {
+        "resultado": "FIM_DISPENSADO_ARRIMO",
+        "razao": "Viúvo/divorciado que sustenta filho menor",
+        "base_legal": "Art. 105, §8º, nº 3 do Decreto 57.654/1966"
+      },
+      "D": {
+        "resultado": "FIM_DISPENSADO_ARRIMO",
+        "razao": "Casado que sustenta esposa e/ou filho",
+        "base_legal": "Art. 105, §8º, nº 4 do Decreto 57.654/1966"
+      },
+      "E": {
+        "resultado": "FIM_DISPENSADO_ARRIMO",
+        "razao": "Solteiro que sustenta filho menor reconhecido",
+        "base_legal": "Art. 105, §8º, nº 5 do Decreto 57.654/1966"
+      },
+      "F": {
+        "resultado": "FIM_DISPENSADO_ARRIMO",
+        "razao": "Órfão que sustenta irmãos",
+        "base_legal": "Art. 105, §8º, nº 6 do Decreto 57.654/1966"
+      },
+      "G": {
+        "resultado": "FIM_DISPENSADO_ARRIMO",
+        "razao": "Órfão que sustenta avós incapazes",
+        "base_legal": "Art. 105, §8º, nº 7 do Decreto 57.654/1966"
+      },
+      "H": {
+        "proximo": "P9"
+      }
+    }
+  },
+  "P9": {
+    "id": "P9",
+    "pergunta": "Você é padre, pastor, rabino ou ministro de alguma religião?",
+    "explicacao": "Já ordenado/consagrado, não apenas estudando",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_DISPENSADO",
+        "razao": "Sacerdotes e ministros de qualquer religião são dispensados",
+        "base_legal": "Art. 98, §2º, nº 1 do Decreto 57.654/1966",
+        "tipo_dispensa": "Dispensa de incorporação"
+      },
+      "nao": {
+        "proximo": "P10"
+      }
+    }
+  },
+  "P10": {
+    "id": "P10",
+    "pergunta": "Você está estudando para ser padre, pastor ou líder religioso?",
+    "explicacao": "Seminarista, estudante de teologia em instituição religiosa...",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ADIAMENTO",
+        "razao": "Estudantes em institutos de formação religiosa têm adiamento até a conclusão ou interrupção do curso",
+        "base_legal": "Art. 98, nº 2, letra 'a' do Decreto 57.654/1966",
+        "tipo_dispensa": "Adiamento de incorporação"
+      },
+      "nao": {
+        "proximo": "P11"
+      }
+    }
+  },
+  "P11": {
+    "id": "P11",
+    "pergunta": "Você é CONTRA servir o exército por motivos religiosos, filosóficos ou políticos?",
+    "explicacao": "Isso se chama 'Objeção de Consciência' ou 'Imperativo de Consciência'. É um direito garantido pela Constituição! Exemplos: pacifismo, crenças religiosas contra violência, convicções políticas antimilitaristas...",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "proximo": "P11_1"
+      },
+      "nao": {
+        "proximo": "P12"
+      }
+    }
+  },
+  "P11_1": {
+    "id": "P11_1",
+    "pergunta": "Você consegue comprovar essa objeção?",
+    "explicacao": "Exemplos de comprovação:\n• Declaração de líder religioso (ex: Testemunhas de Jeová têm carta modelo)\n• Filiação a partido/organização pacifista ou antimilitarista\n• Histórico documentado de ativismo\nNão precisa de TUDO isso, mas alguma forma de demonstrar que é genuíno",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_OBJECAO_CONSCIENCIA",
+        "razao": "A Constituição garante o direito de não prestar serviço militar por objeção de consciência",
+        "base_legal": "Art. 5º, VIII e Art. 143, §1º da Constituição Federal",
+        "tipo_dispensa": "Dispensa por objeção de consciência",
+        "nota": "Você deve declarar isso NO MOMENTO DO ALISTAMENTO. O serviço alternativo nunca foi implementado, então na prática você é dispensado. Se negarem, procure a organização LIVRES ou um advogado."
+      },
+      "nao": {
+        "proximo": "P11_2"
+      }
+    }
+  },
+  "P11_2": {
+    "id": "P11_2",
+    "pergunta": "Você quer tentar mesmo assim declarando verbalmente?",
+    "explicacao": "Muitas JSM dispensam só pela declaração verbal, mas não é garantido. Vale tentar!",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "instrucao": "No dia do alistamento, declare que você tem objeção de consciência. Se não aceitarem, peça por escrito a negativa e procure ajuda jurídica.",
+        "proximo": "P12"
+      },
+      "nao": {
+        "proximo": "P12"
+      }
+    }
+  },
+  "P12": {
+    "id": "P12",
+    "pergunta": "Você está cursando Medicina, Odontologia, Farmácia ou Veterinária?",
+    "explicacao": "Graduação em andamento em instituição reconhecida",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ADIAMENTO",
+        "razao": "Estudantes desses cursos têm adiamento até a conclusão. PORÉM, depois de formado você pode ser convocado como MFDV (Médico/Farmacêutico/Dentista/Veterinário)",
+        "base_legal": "Art. 98, nº 2, letra 'c' do Decreto 57.654/1966",
+        "tipo_dispensa": "Adiamento de incorporação",
+        "alerta": "Isso é só adiamento! Depois de formado, existe o serviço militar obrigatório de profissionais de saúde (MFDV)"
+      },
+      "nao": {
+        "proximo": "P13"
+      }
+    }
+  },
+  "P13": {
+    "id": "P13",
+    "pergunta": "Você está matriculado em algum desses cursos?",
+    "explicacao": "• CPOR/NPOR (Centro/Núcleo de Preparação de Oficiais da Reserva)\n• Escola Militar (EsPCEx, AMAN, etc.)\n• Curso de formação de oficiais da PM ou Bombeiros",
+    "tipo": "selecao_unica",
+    "respostas": {
+      "CPOR_NPOR": {
+        "resultado": "FIM_DISPENSADO",
+        "razao": "Você já está em formação militar específica",
+        "base_legal": "Art. 105, nº 3 e 4 do Decreto 57.654/1966",
+        "tipo_dispensa": "Dispensa de incorporação regular"
+      },
+      "PM_BOMBEIROS": {
+        "resultado": "FIM_ADIAMENTO",
+        "razao": "Formação em PM/Bombeiros gera adiamento",
+        "base_legal": "Art. 98, nº 2, letra 'b' do Decreto 57.654/1966",
+        "tipo_dispensa": "Adiamento de incorporação"
+      },
+      "NENHUM": {
+        "proximo": "P14"
+      }
+    }
+  },
+  "P14": {
+    "id": "P14",
+    "pergunta": "Você trabalha em uma empresa considerada estratégica para Segurança Nacional?",
+    "explicacao": "Indústrias de defesa, fábricas militares, empresas de transporte/comunicações declaradas pelo Estado-Maior das Forças Armadas. Exemplos: Embraer Defesa, Taurus, Avibras, Imbel... Seu RH saberia te dizer se a empresa está na lista",
+    "tipo": "sim_nao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_DISPENSADO",
+        "razao": "Operários e funcionários de empresas de interesse militar são dispensados",
+        "base_legal": "Art. 105, nº 5 do Decreto 57.654/1966",
+        "tipo_dispensa": "Dispensa de incorporação",
+        "dica": "Você precisa de declaração da empresa confirmando seu vínculo"
+      },
+      "nao": {
+        "proximo": "P15"
+      }
+    }
+  },
+  "AVISO_FASE_6": {
+    "id": "AVISO_FASE_6",
+    "pergunta": "📋 AVISO: Agora vamos verificar condições de saúde.",
+    "explicacao": "Se você tem QUALQUER condição médica significativa, mesmo que não pareça \"grave o suficiente\", continue respondendo. Muita gente é dispensada por coisas que achava que \"não contavam\".\n\nLembre-se: você precisará de LAUDO MÉDICO para comprovar qualquer condição na hora da seleção.",
+    "tipo": "informativo",
+    "respostas": {
+      "continuar": {
+        "proximo": "P15"
+      }
+    }
+  },
+  "P15": {
+    "id": "P15",
+    "pergunta": "Você tem algum problema de visão?",
+    "explicacao": "Qualquer coisa: usa óculos, lente, dificuldade pra enxergar...",
+    "tipo": "sim_nao",
+    "categoria": "visao",
+    "respostas": {
+      "sim": {
+        "proximo": "P15_1"
+      },
+      "nao": {
+        "proximo": "P20"
+      }
+    }
+  },
+  "P15_1": {
+    "id": "P15_1",
+    "pergunta": "Você é TOTALMENTE cego?",
+    "explicacao": "Cegueira total em ambos os olhos",
+    "tipo": "sim_nao",
+    "categoria": "visao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ISENTO_C",
+        "razao": "Cegueira é causa de isenção definitiva",
+        "base_legal": "Art. 109 do Decreto 57.654 + Anexo II do IGISC",
+        "tipo_dispensa": "Isenção (Incapaz C)"
+      },
+      "nao": {
+        "proximo": "P15_2"
+      }
+    }
+  },
+  "P15_2": {
+    "id": "P15_2",
+    "pergunta": "Você é cego de UM olho?",
+    "explicacao": "Visão monocular - enxerga só com um olho",
+    "tipo": "sim_nao",
+    "categoria": "visao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ISENTO_C",
+        "razao": "Visão monocular é incapacitante para o serviço militar",
+        "base_legal": "Anexo II do IGISC (Decreto 703/1992)",
+        "tipo_dispensa": "Isenção (Incapaz C)"
+      },
+      "nao": {
+        "proximo": "P15_3"
+      }
+    }
+  },
+  "P15_3": {
+    "id": "P15_3",
+    "pergunta": "Você tem miopia ALTA? (mais de 6 graus/dioptrias)",
+    "explicacao": "Olha na receita do seu óculos. Se o número for tipo -6,00 ou mais, você se encaixa aqui",
+    "tipo": "sim_nao",
+    "categoria": "visao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ISENTO_C",
+        "razao": "Miopia superior a 6 dioptrias é causa de isenção",
+        "base_legal": "Anexo III do IGISC - Índices mínimos de aptidão",
+        "tipo_dispensa": "Isenção (Incapaz C)"
+      },
+      "nao": {
+        "proximo": "P15_4"
+      }
+    }
+  },
+  "P15_4": {
+    "id": "P15_4",
+    "pergunta": "Você tem alguma dessas condições oculares?",
+    "explicacao": "• Glaucoma\n• Descolamento de retina\n• Catarata avançada\n• Ceratocone\n• Estrabismo acentuado\n• Daltonismo grave\n• Outra doença ocular grave",
+    "tipo": "sim_nao",
+    "categoria": "visao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_PROVAVELMENTE_ISENTO",
+        "razao": "Doenças oculares graves são causa de isenção",
+        "base_legal": "Anexo II do IGISC",
+        "tipo_dispensa": "Provável isenção",
+        "dica": "Leve laudo do oftalmologista detalhando sua condição"
+      },
+      "nao": {
+        "proximo": "P15_5"
+      }
+    }
+  },
+  "P15_5": {
+    "id": "P15_5",
+    "pergunta": "Seu grau é entre 3 e 6 dioptrias (miopia/hipermetropia/astigmatismo)?",
+    "explicacao": "Grau médio, que corrige com óculos mas é significativo",
+    "tipo": "sim_nao",
+    "categoria": "visao",
+    "respostas": {
+      "sim": {
+        "instrucao": "Graus médios podem resultar em 'Incapaz B-2' (incluído no excesso de contingente). Leve seu laudo oftalmológico atualizado.",
+        "proximo": "P20"
+      },
+      "nao": {
+        "proximo": "P20"
+      }
+    }
+  },
+  "P20": {
+    "id": "P20",
+    "pergunta": "Você tem algum problema de audição?",
+    "explicacao": "Dificuldade pra ouvir, usa aparelho, qualquer coisa...",
+    "tipo": "sim_nao",
+    "categoria": "audicao",
+    "respostas": {
+      "sim": {
+        "proximo": "P20_1"
+      },
+      "nao": {
+        "proximo": "P25"
+      }
+    }
+  },
+  "P20_1": {
+    "id": "P20_1",
+    "pergunta": "Você é TOTALMENTE surdo?",
+    "explicacao": "Surdez total em ambos os ouvidos",
+    "tipo": "sim_nao",
+    "categoria": "audicao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ISENTO_C",
+        "razao": "Surdez total é causa de isenção definitiva",
+        "base_legal": "Anexo II do IGISC",
+        "tipo_dispensa": "Isenção (Incapaz C)"
+      },
+      "nao": {
+        "proximo": "P20_2"
+      }
+    }
+  },
+  "P20_2": {
+    "id": "P20_2",
+    "pergunta": "Você é surdo de UM ouvido? (surdez unilateral)",
+    "explicacao": "",
+    "tipo": "sim_nao",
+    "categoria": "audicao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ISENTO_C",
+        "razao": "Surdez unilateral profunda é incapacitante",
+        "base_legal": "Anexo II do IGISC",
+        "tipo_dispensa": "Isenção (Incapaz C)"
+      },
+      "nao": {
+        "proximo": "P20_3"
+      }
+    }
+  },
+  "P20_3": {
+    "id": "P20_3",
+    "pergunta": "Você tem perda auditiva significativa ou usa aparelho auditivo?",
+    "explicacao": "",
+    "tipo": "sim_nao",
+    "categoria": "audicao",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_PROVAVELMENTE_ISENTO",
+        "razao": "Deficiência auditiva significativa é incapacitante",
+        "base_legal": "Anexo II do IGISC",
+        "dica": "Leve audiometria atualizada"
+      },
+      "nao": {
+        "proximo": "P25"
+      }
+    }
+  },
+  "P25": {
+    "id": "P25",
+    "pergunta": "Você tem ou já teve algum problema de saúde mental?",
+    "explicacao": "Depressão, ansiedade, TDAH, qualquer diagnóstico psiquiátrico... Sem julgamento, é só pra saber se você pode ser dispensado",
+    "tipo": "sim_nao",
+    "categoria": "saude_mental",
+    "respostas": {
+      "sim": {
+        "proximo": "P25_1"
+      },
+      "nao": {
+        "proximo": "P30"
+      }
+    }
+  },
+  "P25_1": {
+    "id": "P25_1",
+    "pergunta": "Você tem algum desses diagnósticos GRAVES?",
+    "explicacao": "• Esquizofrenia\n• Transtorno Bipolar\n• Transtorno de Personalidade grave\n• Psicose\n• Depressão grave/recorrente\n• Transtorno de estresse pós-traumático grave\n• Dependência química (drogas/álcool) em tratamento",
+    "tipo": "sim_nao",
+    "categoria": "saude_mental",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ISENTO_C",
+        "razao": "Transtornos mentais graves são causa de isenção definitiva",
+        "base_legal": "Anexo II do IGISC + Art. 109 Decreto 57.654",
+        "tipo_dispensa": "Isenção (Incapaz C)",
+        "dica": "Leve laudo psiquiátrico detalhado com CID"
+      },
+      "nao": {
+        "proximo": "P25_2"
+      }
+    }
+  },
+  "P25_2": {
+    "id": "P25_2",
+    "pergunta": "Você tem algum desses diagnósticos?",
+    "explicacao": "• Depressão (leve/moderada)\n• Ansiedade generalizada\n• Síndrome do pânico\n• TOC (Transtorno Obsessivo-Compulsivo)\n• TDAH\n• Autismo/Asperger",
+    "tipo": "sim_nao",
+    "categoria": "saude_mental",
+    "respostas": {
+      "sim": {
+        "instrucao": "Transtornos moderados podem resultar em dispensa. Leve laudo psiquiátrico/psicológico atualizado detalhando como a condição afeta sua vida.",
+        "proximo": "P30"
+      },
+      "nao": {
+        "proximo": "P30"
+      }
+    }
+  },
+  "P30": {
+    "id": "P30",
+    "pergunta": "Você tem algum problema neurológico?",
+    "explicacao": "Epilepsia, convulsões, problemas de coordenação, tremores...",
+    "tipo": "sim_nao",
+    "categoria": "neurologico",
+    "respostas": {
+      "sim": {
+        "proximo": "P30_1"
+      },
+      "nao": {
+        "proximo": "P35"
+      }
+    }
+  },
+  "P30_1": {
+    "id": "P30_1",
+    "pergunta": "Você tem alguma dessas condições?",
+    "explicacao": "• Epilepsia (qualquer tipo)\n• Esclerose múltipla\n• Doença de Parkinson\n• Paralisia cerebral\n• Paralisia de qualquer tipo\n• AVC (sequelas)\n• Tumor cerebral (atual ou tratado)",
+    "tipo": "sim_nao",
+    "categoria": "neurologico",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ISENTO_C",
+        "razao": "Doenças neurológicas graves são causa de isenção definitiva",
+        "base_legal": "Anexo II do IGISC",
+        "tipo_dispensa": "Isenção (Incapaz C)"
+      },
+      "nao": {
+        "proximo": "P30_2"
+      }
+    }
+  },
+  "P30_2": {
+    "id": "P30_2",
+    "pergunta": "Você tem enxaqueca severa/crônica ou outros problemas neurológicos?",
+    "explicacao": "",
+    "tipo": "sim_nao",
+    "categoria": "neurologico",
+    "respostas": {
+      "sim": {
+        "instrucao": "Condições neurológicas moderadas podem resultar em dispensa dependendo da avaliação.",
+        "proximo": "P35"
+      },
+      "nao": {
+        "proximo": "P35"
+      }
+    }
+  },
+  "P35": {
+    "id": "P35",
+    "pergunta": "Você tem algum problema no coração ou circulação?",
+    "explicacao": "Sopro, arritmia, pressão alta, varizes graves...",
+    "tipo": "sim_nao",
+    "categoria": "cardiovascular",
+    "respostas": {
+      "sim": {
+        "proximo": "P35_1"
+      },
+      "nao": {
+        "proximo": "P40"
+      }
+    }
+  },
+  "P35_1": {
+    "id": "P35_1",
+    "pergunta": "Você tem alguma dessas condições?",
+    "explicacao": "• Cardiopatia grave (doença cardíaca séria)\n• Insuficiência cardíaca\n• Arritmia grave\n• Marcapasso/desfibrilador implantado\n• Infarto (histórico)\n• Doença de Chagas com comprometimento cardíaco",
+    "tipo": "sim_nao",
+    "categoria": "cardiovascular",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ISENTO_C",
+        "razao": "Cardiopatia grave é causa de isenção definitiva",
+        "base_legal": "Anexo II do IGISC + Lei 6.880/80, Art. 108",
+        "tipo_dispensa": "Isenção (Incapaz C)"
+      },
+      "nao": {
+        "proximo": "P35_2"
+      }
+    }
+  },
+  "P35_2": {
+    "id": "P35_2",
+    "pergunta": "Você tem alguma dessas condições?",
+    "explicacao": "• Hipertensão (pressão alta) - mesmo controlada com remédio\n• Sopro cardíaco\n• Arritmia leve/moderada\n• Varizes significativas",
+    "tipo": "sim_nao",
+    "categoria": "cardiovascular",
+    "respostas": {
+      "sim": {
+        "instrucao": "Pressão alta não controlada ou com complicações pode gerar dispensa. Leve laudo cardiológico.",
+        "proximo": "P40"
+      },
+      "nao": {
+        "proximo": "P40"
+      }
+    }
+  },
+  "P40": {
+    "id": "P40",
+    "pergunta": "Você tem algum problema respiratório?",
+    "explicacao": "Asma, bronquite, falta de ar, rinite grave...",
+    "tipo": "sim_nao",
+    "categoria": "respiratorio",
+    "respostas": {
+      "sim": {
+        "proximo": "P40_1"
+      },
+      "nao": {
+        "proximo": "P45"
+      }
+    }
+  },
+  "P40_1": {
+    "id": "P40_1",
+    "pergunta": "Você tem alguma dessas condições?",
+    "explicacao": "• Asma moderada a grave\n• Fibrose pulmonar\n• DPOC (Doença Pulmonar Obstrutiva Crônica)\n• Tuberculose ativa ou com sequelas graves\n• Pneumonia recorrente\n• Bronquiectasia",
+    "tipo": "sim_nao",
+    "categoria": "respiratorio",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ISENTO_C",
+        "razao": "Doenças respiratórias graves são causa de isenção",
+        "base_legal": "Anexo II do IGISC",
+        "tipo_dispensa": "Isenção (Incapaz C)",
+        "dica": "Leve espirometria e laudo pneumológico"
+      },
+      "nao": {
+        "proximo": "P40_2"
+      }
+    }
+  },
+  "P40_2": {
+    "id": "P40_2",
+    "pergunta": "Você tem asma leve, bronquite ou rinite alérgica severa?",
+    "explicacao": "",
+    "tipo": "sim_nao",
+    "categoria": "respiratorio",
+    "respostas": {
+      "sim": {
+        "instrucao": "Asma leve pode resultar em Incapaz B. Leve laudo e histórico de crises.",
+        "proximo": "P45"
+      },
+      "nao": {
+        "proximo": "P45"
+      }
+    }
+  },
+  "P45": {
+    "id": "P45",
+    "pergunta": "Você tem algum problema nos ossos, músculos ou articulações?",
+    "explicacao": "Problema de coluna, joelho, pé, braço... qualquer coisa ortopédica",
+    "tipo": "sim_nao",
+    "categoria": "osteomuscular",
+    "respostas": {
+      "sim": {
+        "proximo": "P45_1"
+      },
+      "nao": {
+        "proximo": "P50_1"
+      }
+    }
+  },
+  "P45_1": {
+    "id": "P45_1",
+    "pergunta": "Você tem alguma amputação?",
+    "explicacao": "Falta de membro ou parte de membro - dedo, mão, pé, perna...",
+    "tipo": "sim_nao",
+    "categoria": "osteomuscular",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ISENTO_C",
+        "razao": "Amputações são causa de isenção definitiva",
+        "base_legal": "Anexo II do IGISC",
+        "tipo_dispensa": "Isenção (Incapaz C)"
+      },
+      "nao": {
+        "proximo": "P45_2"
+      }
+    }
+  },
+  "P45_2": {
+    "id": "P45_2",
+    "pergunta": "Você tem alguma dessas condições de COLUNA?",
+    "explicacao": "• Escoliose grave (acima de 40°)\n• Cifose grave\n• Lordose grave\n• Hérnia de disco grave\n• Espondiloartrose anquilosante",
+    "tipo": "sim_nao",
+    "categoria": "osteomuscular",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ISENTO_C",
+        "razao": "Deformidades graves de coluna são causa de isenção",
+        "base_legal": "Anexo II do IGISC",
+        "tipo_dispensa": "Isenção (Incapaz C)"
+      },
+      "nao": {
+        "proximo": "P45_3"
+      }
+    }
+  },
+  "P45_3": {
+    "id": "P45_3",
+    "pergunta": "Você tem alguma dessas condições?",
+    "explicacao": "• Artrite reumatoide\n• Artrose grave\n• Luxação recorrente (ombro, joelho...)\n• Fratura mal consolidada\n• Tendinite crônica grave\n• Lesão de ligamento grave (LCA, etc.)",
+    "tipo": "sim_nao",
+    "categoria": "osteomuscular",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_PROVAVELMENTE_ISENTO",
+        "razao": "Doenças osteomusculares graves são incapacitantes",
+        "base_legal": "Anexo II do IGISC",
+        "dica": "Leve raio-X, ressonância e laudo ortopédico"
+      },
+      "nao": {
+        "proximo": "P45_4"
+      }
+    }
+  },
+  "P45_4": {
+    "id": "P45_4",
+    "pergunta": "Você tem PÉ PLANO (pé chato)?",
+    "explicacao": "Aquele pé que não tem curva, pisa todo no chão",
+    "tipo": "sim_nao",
+    "categoria": "osteomuscular",
+    "respostas": {
+      "sim": {
+        "proximo": "P45_4_1"
+      },
+      "nao": {
+        "proximo": "P45_5"
+      }
+    }
+  },
+  "P45_4_1": {
+    "id": "P45_4_1",
+    "pergunta": "É pé plano de 3º grau (grave)?",
+    "explicacao": "Seu médico ou podólogo pode te dizer o grau. Se você tem dor ou dificuldade pra andar/correr, provavelmente é",
+    "tipo": "sim_nao",
+    "categoria": "osteomuscular",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ISENTO_C",
+        "razao": "Pé plano de 3º grau é causa de isenção",
+        "base_legal": "Anexo III do IGISC",
+        "tipo_dispensa": "Isenção (Incapaz C)"
+      },
+      "nao": {
+        "instrucao": "Pé plano leve/moderado pode resultar em dispensa dependendo da avaliação.",
+        "proximo": "P45_5"
+      }
+    }
+  },
+  "P45_5": {
+    "id": "P45_5",
+    "pergunta": "Você tem escoliose, cifose ou lordose LEVE/MODERADA?",
+    "explicacao": "",
+    "tipo": "sim_nao",
+    "categoria": "osteomuscular",
+    "respostas": {
+      "sim": {
+        "instrucao": "Leve raio-X de coluna com medição do ângulo",
+        "proximo": "P50_1"
+      },
+      "nao": {
+        "proximo": "P50_1"
+      }
+    }
+  },
+  "P50_1": {
+    "id": "P50_1",
+    "pergunta": "Você tem MENOS de 1,55m de altura?",
+    "explicacao": "",
+    "tipo": "sim_nao",
+    "categoria": "altura_peso",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ISENTO_C",
+        "razao": "Altura inferior ao mínimo exigido",
+        "base_legal": "Anexo IV do IGISC - Tabela de altura/peso",
+        "tipo_dispensa": "Isenção (Incapaz C)"
+      },
+      "nao": {
+        "proximo": "P50_2"
+      }
+    }
+  },
+  "P50_2": {
+    "id": "P50_2",
+    "pergunta": "Você tem MAIS de 2,00m de altura?",
+    "explicacao": "",
+    "tipo": "sim_nao",
+    "categoria": "altura_peso",
+    "respostas": {
+      "sim": {
+        "instrucao": "Altura excessiva pode limitar incorporação em algumas unidades. Será avaliado caso a caso.",
+        "proximo": "P50_3"
+      },
+      "nao": {
+        "proximo": "P50_3"
+      }
+    }
+  },
+  "P50_3": {
+    "id": "P50_3",
+    "pergunta": "Você é considerado obeso?",
+    "explicacao": "IMC acima de 30. Calcule: seu peso ÷ (altura × altura)",
+    "tipo": "sim_nao",
+    "categoria": "altura_peso",
+    "respostas": {
+      "sim": {
+        "proximo": "P50_3_1"
+      },
+      "nao": {
+        "proximo": "P50_4"
+      }
+    }
+  },
+  "P50_3_1": {
+    "id": "P50_3_1",
+    "pergunta": "Você tem obesidade MÓRBIDA? (IMC acima de 40)",
+    "explicacao": "",
+    "tipo": "sim_nao",
+    "categoria": "altura_peso",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ISENTO_C",
+        "razao": "Obesidade mórbida é causa de isenção",
+        "base_legal": "Anexo II e III do IGISC",
+        "tipo_dispensa": "Isenção (Incapaz C)"
+      },
+      "nao": {
+        "instrucao": "Obesidade grau I-II pode resultar em Incapaz B",
+        "proximo": "P50_4"
+      }
+    }
+  },
+  "P50_4": {
+    "id": "P50_4",
+    "pergunta": "Você está muito abaixo do peso? (IMC abaixo de 18)",
+    "explicacao": "",
+    "tipo": "sim_nao",
+    "categoria": "altura_peso",
+    "respostas": {
+      "sim": {
+        "instrucao": "Desnutrição/baixo peso pode resultar em dispensa temporária (Incapaz B)",
+        "proximo": "P55"
+      },
+      "nao": {
+        "proximo": "P55"
+      }
+    }
+  },
+  "P55": {
+    "id": "P55",
+    "pergunta": "Você tem ou já teve alguma doença infecciosa ou crônica grave?",
+    "explicacao": "",
+    "tipo": "sim_nao",
+    "categoria": "infecciosas_cronicas",
+    "respostas": {
+      "sim": {
+        "proximo": "P55_1"
+      },
+      "nao": {
+        "proximo": "P60"
+      }
+    }
+  },
+  "P55_1": {
+    "id": "P55_1",
+    "pergunta": "Você tem alguma dessas condições?",
+    "explicacao": "• HIV/AIDS\n• Hepatite B ou C crônica\n• Tuberculose ativa\n• Hanseníase (Lepra)\n• Doença de Chagas\n• Sífilis não tratada\n• Malária recorrente",
+    "tipo": "sim_nao",
+    "categoria": "infecciosas_cronicas",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_ISENTO_C",
+        "razao": "Doenças infecciosas graves são causa de isenção",
+        "base_legal": "Anexo II do IGISC",
+        "tipo_dispensa": "Isenção (Incapaz C)"
+      },
+      "nao": {
+        "proximo": "P55_2"
+      }
+    }
+  },
+  "P55_2": {
+    "id": "P55_2",
+    "pergunta": "Você tem alguma dessas condições crônicas?",
+    "explicacao": "• Diabetes (qualquer tipo)\n• Lúpus\n• Doença renal crônica\n• Doença hepática crônica\n• Câncer (atual ou tratado)\n• Doença inflamatória intestinal (Crohn, colite)\n• Psoríase grave\n• Hemofilia ou problemas de coagulação",
+    "tipo": "sim_nao",
+    "categoria": "infecciosas_cronicas",
+    "respostas": {
+      "sim": {
+        "resultado": "FIM_PROVAVELMENTE_ISENTO",
+        "razao": "Doenças crônicas graves são incapacitantes para o serviço militar",
+        "base_legal": "Anexo II do IGISC",
+        "dica": "Leve todos os laudos e histórico médico"
+      },
+      "nao": {
+        "proximo": "P60"
+      }
+    }
+  },
+  "P60": {
+    "id": "P60",
+    "pergunta": "Você tem alguma outra condição que não foi mencionada?",
+    "explicacao": "• Alergia grave (anafilaxia)\n• Problemas de fala graves (gagueira severa, mutismo)\n• Incontinência urinária/fecal\n• Hérnia (inguinal, umbilical...)\n• Varicocele\n• Hidrocele\n• Qualquer outra condição que você acha relevante",
+    "tipo": "sim_nao",
+    "categoria": "outras",
+    "respostas": {
+      "sim": {
+        "instrucao": "Muitas condições não listadas também podem gerar dispensa. Leve toda documentação médica para a seleção e explique como a condição afeta sua capacidade física.",
+        "proximo": "RESULTADO_FINAL"
+      },
+      "nao": {
+        "proximo": "RESULTADO_FINAL"
+      }
+    }
+  },
+  "RESULTADO_FINAL": {
+    "id": "RESULTADO_FINAL",
+    "pergunta": "RESULTADO: VOCÊ PROVAVELMENTE TERÁ QUE SE ALISTAR",
+    "explicacao": "Mas calma! Isso não significa que você VAI servir. Lembre-se:\n\n1. EXCESSO DE CONTINGENTE\nApenas ~7% dos alistados são incorporados (cerca de 80 mil de 1,1 milhão). A grande maioria é dispensada por \"excesso de contingente\".\n\n2. NA ENTREVISTA\nQuando perguntarem \"Você quer servir?\", você pode dizer \"NÃO\". Isso é registrado e conta contra sua convocação.\n\n3. DATAS ESTRATÉGICAS\nSe alistar no final do período pode ajudar (menos vagas disponíveis).\n\n4. LOCALIZAÇÃO\nCidades grandes têm mais candidatos por vaga = mais chance de excesso.\n\n5. LEVE TODA DOCUMENTAÇÃO\nMesmo condições leves podem ajudar. Leve TUDO que tiver.\n\nBOA SORTE!\n\nSe precisar de ajuda jurídica com objeção de consciência, procure a organização LIVRES: https://livres.org.br/",
+    "tipo": "resultado",
+    "respostas": {}
+  }
+}
