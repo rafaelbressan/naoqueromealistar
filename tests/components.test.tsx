@@ -115,27 +115,18 @@ describe('Question Component', () => {
     });
   });
 
-  describe('Back button', () => {
-    it('shows back button when canGoBack is true', () => {
-      render(
-        <Question question={simNaoQuestion} onAnswer={vi.fn()} onBack={vi.fn()} canGoBack={true} />
-      );
-      // Back button renders twice (desktop + mobile)
-      expect(screen.getAllByText('← Voltar').length).toBeGreaterThan(0);
-    });
-
-    it('does not show back button when canGoBack is false', () => {
-      render(<Question question={simNaoQuestion} onAnswer={vi.fn()} canGoBack={false} />);
+  // Note: Back button was moved to Navbar component
+  describe('Question component (back button moved to Navbar)', () => {
+    it('does not render back button in Question component', () => {
+      render(<Question question={simNaoQuestion} onAnswer={vi.fn()} />);
       expect(screen.queryByText('← Voltar')).not.toBeInTheDocument();
     });
 
-    it('calls onBack when back button is clicked', () => {
-      const onBack = vi.fn();
-      render(
-        <Question question={simNaoQuestion} onAnswer={vi.fn()} onBack={onBack} canGoBack={true} />
-      );
-      fireEvent.click(screen.getAllByText('← Voltar')[0]);
-      expect(onBack).toHaveBeenCalled();
+    it('renders category icon', () => {
+      render(<Question question={simNaoQuestion} onAnswer={vi.fn()} />);
+      // Should have an SVG icon
+      const icons = document.querySelectorAll('svg');
+      expect(icons.length).toBeGreaterThan(0);
     });
   });
 

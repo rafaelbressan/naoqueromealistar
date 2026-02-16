@@ -7,7 +7,7 @@ interface ProgressBarProps {
   totalAnswered: number;
 }
 
-const getPhaseInfo = (questionId: string | null) => {
+export const getPhaseInfo = (questionId: string | null) => {
   if (!questionId) return { phase: 6, phaseName: 'Concluído', totalPhases: 6 };
 
   const id = questionId;
@@ -29,7 +29,7 @@ const getPhaseInfo = (questionId: string | null) => {
 
   // Phase 4: Religion/Conscience (P9-P11)
   if (id.match(/^P(9|10|11)/)) {
-    return { phase: 4, phaseName: 'Religião/Consciência', totalPhases: 6 };
+    return { phase: 4, phaseName: 'Religião', totalPhases: 6 };
   }
 
   // Phase 5: Education (P12-P14)
@@ -37,8 +37,38 @@ const getPhaseInfo = (questionId: string | null) => {
     return { phase: 5, phaseName: 'Educação', totalPhases: 6 };
   }
 
-  // Phase 6: Medical (P15+)
-  if (id.match(/^P[1-9][5-9]/) || id.match(/^P[2-9][0-9]/)) {
+  // Phase 6: Medical (P15+) - with subcategories
+  if (id.match(/^P15/)) {
+    return { phase: 6, phaseName: 'Visão', totalPhases: 6 };
+  }
+  if (id.match(/^P20/)) {
+    return { phase: 6, phaseName: 'Audição', totalPhases: 6 };
+  }
+  if (id.match(/^P25/)) {
+    return { phase: 6, phaseName: 'Saúde Mental', totalPhases: 6 };
+  }
+  if (id.match(/^P30/)) {
+    return { phase: 6, phaseName: 'Neurológico', totalPhases: 6 };
+  }
+  if (id.match(/^P35/)) {
+    return { phase: 6, phaseName: 'Cardiovascular', totalPhases: 6 };
+  }
+  if (id.match(/^P40/)) {
+    return { phase: 6, phaseName: 'Respiratório', totalPhases: 6 };
+  }
+  if (id.match(/^P45/)) {
+    return { phase: 6, phaseName: 'Osteomuscular', totalPhases: 6 };
+  }
+  if (id.match(/^P50/)) {
+    return { phase: 6, phaseName: 'Altura/Peso', totalPhases: 6 };
+  }
+  if (id.match(/^P55/)) {
+    return { phase: 6, phaseName: 'Doenças Crônicas', totalPhases: 6 };
+  }
+  if (id.match(/^P60/) || id === 'RESULTADO_FINAL') {
+    return { phase: 6, phaseName: 'Outras Condições', totalPhases: 6 };
+  }
+  if (id === 'AVISO_FASE_6') {
     return { phase: 6, phaseName: 'Saúde', totalPhases: 6 };
   }
 
@@ -46,21 +76,21 @@ const getPhaseInfo = (questionId: string | null) => {
 };
 
 export function ProgressBar({ currentQuestionId, totalAnswered }: ProgressBarProps) {
-  const { phase, phaseName, totalPhases } = getPhaseInfo(currentQuestionId);
+  const { phase, totalPhases } = getPhaseInfo(currentQuestionId);
   const progress = (phase / totalPhases) * 100;
 
   return (
-    <div className="sticky top-0 bg-white border-b border-gray-200 shadow-sm z-10">
-      <div className="max-w-2xl mx-auto px-4 py-3">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-700">
-            Fase {phase} de {totalPhases}: {phaseName}
+    <div className="bg-white border-b border-gray-100 z-10">
+      <div className="max-w-2xl mx-auto px-4 py-2">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-xs font-medium text-gray-500">
+            Fase {phase} de {totalPhases}
           </span>
-          <span className="text-sm text-gray-500">
+          <span className="text-xs text-gray-400">
             {totalAnswered} {totalAnswered === 1 ? 'resposta' : 'respostas'}
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+        <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}

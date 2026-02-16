@@ -1,16 +1,87 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import {
+  User,
+  MapPin,
+  Users,
+  Church,
+  GraduationCap,
+  Eye,
+  Ear,
+  Brain,
+  Activity,
+  Heart,
+  Wind,
+  Bone,
+  Scale,
+  Thermometer,
+  HelpCircle,
+  Info,
+} from 'lucide-react';
 import type { Question as QuestionType } from '@/types/quiz';
 
 interface QuestionProps {
   question: QuestionType;
   onAnswer: (answerKey: string) => void;
-  onBack?: () => void;
-  canGoBack?: boolean;
 }
 
-export function Question({ question, onAnswer, onBack, canGoBack }: QuestionProps) {
+// Map categories to icons
+const getCategoryIcon = (questionId: string, categoria?: string) => {
+  // Check categoria first
+  if (categoria) {
+    const iconMap: Record<string, React.ReactNode> = {
+      visao: <Eye className="w-6 h-6" />,
+      audicao: <Ear className="w-6 h-6" />,
+      saude_mental: <Brain className="w-6 h-6" />,
+      neurologico: <Activity className="w-6 h-6" />,
+      cardiovascular: <Heart className="w-6 h-6" />,
+      respiratorio: <Wind className="w-6 h-6" />,
+      osteomuscular: <Bone className="w-6 h-6" />,
+      altura_peso: <Scale className="w-6 h-6" />,
+      infecciosas_cronicas: <Thermometer className="w-6 h-6" />,
+      outras: <HelpCircle className="w-6 h-6" />,
+    };
+    if (iconMap[categoria]) return iconMap[categoria];
+  }
+
+  // Fallback to question ID patterns
+  const id = questionId;
+
+  // Demographics (P1-P4)
+  if (id.match(/^P[1-4]$/)) return <User className="w-6 h-6" />;
+
+  // Location (P5-P7)
+  if (id.match(/^P[5-7]/)) return <MapPin className="w-6 h-6" />;
+
+  // Family (P8)
+  if (id.match(/^P8/)) return <Users className="w-6 h-6" />;
+
+  // Religion (P9-P11)
+  if (id.match(/^P(9|10|11)/)) return <Church className="w-6 h-6" />;
+
+  // Education (P12-P14)
+  if (id.match(/^P1[2-4]/)) return <GraduationCap className="w-6 h-6" />;
+
+  // Medical categories by ID
+  if (id.match(/^P15/)) return <Eye className="w-6 h-6" />;
+  if (id.match(/^P20/)) return <Ear className="w-6 h-6" />;
+  if (id.match(/^P25/)) return <Brain className="w-6 h-6" />;
+  if (id.match(/^P30/)) return <Activity className="w-6 h-6" />;
+  if (id.match(/^P35/)) return <Heart className="w-6 h-6" />;
+  if (id.match(/^P40/)) return <Wind className="w-6 h-6" />;
+  if (id.match(/^P45/)) return <Bone className="w-6 h-6" />;
+  if (id.match(/^P50/)) return <Scale className="w-6 h-6" />;
+  if (id.match(/^P55/)) return <Thermometer className="w-6 h-6" />;
+  if (id.match(/^P60/) || id === 'RESULTADO_FINAL') return <HelpCircle className="w-6 h-6" />;
+  if (id === 'AVISO_FASE_6') return <Info className="w-6 h-6" />;
+
+  return <HelpCircle className="w-6 h-6" />;
+};
+
+export function Question({ question, onAnswer }: QuestionProps) {
+  const icon = getCategoryIcon(question.id, question.categoria);
+
   const renderAnswerButtons = () => {
     if (question.tipo === 'sim_nao') {
       return (
@@ -71,37 +142,29 @@ export function Question({ question, onAnswer, onBack, canGoBack }: QuestionProp
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="w-full max-w-2xl mx-auto flex flex-col min-h-[calc(100vh-120px)] md:min-h-0 md:block"
+      className="w-full max-w-2xl mx-auto"
     >
-      {/* Scrollable content area */}
-      <div className="flex-1 overflow-y-auto p-6 pb-4">
+      {/* Content area with padding for bottom dock on mobile */}
+      <div className="p-4 md:p-6 pb-28 md:pb-6">
         <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
-          {/* Question text */}
-          <div className="space-y-3">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-              {question.pergunta}
-            </h2>
-            {question.explicacao && (
-              <p className="text-gray-600 text-lg whitespace-pre-line">
-                {question.explicacao}
-              </p>
-            )}
+          {/* Question header with icon */}
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+              {icon}
+            </div>
+            <div className="flex-1 space-y-3">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                {question.pergunta}
+              </h2>
+              {question.explicacao && (
+                <p className="text-gray-600 text-base whitespace-pre-line">
+                  {question.explicacao}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Back button - inside card on desktop */}
-          <div className="hidden md:block pt-6">
-            {canGoBack && onBack && (
-              <button
-                onClick={onBack}
-                className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
-                style={{ minHeight: '44px' }}
-              >
-                ← Voltar
-              </button>
-            )}
-          </div>
-
-          {/* Answer buttons - inside card on desktop */}
+          {/* Answer buttons - desktop only */}
           <div className="hidden md:block pt-6">
             {renderAnswerButtons()}
           </div>
@@ -109,17 +172,8 @@ export function Question({ question, onAnswer, onBack, canGoBack }: QuestionProp
       </div>
 
       {/* Fixed bottom dock on mobile */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 space-y-3 shadow-lg">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
         {renderAnswerButtons()}
-        {canGoBack && onBack && (
-          <button
-            onClick={onBack}
-            className="w-full text-gray-600 hover:text-gray-900 font-medium transition-colors py-2"
-            style={{ minHeight: '44px' }}
-          >
-            ← Voltar
-          </button>
-        )}
       </div>
     </motion.div>
   );
