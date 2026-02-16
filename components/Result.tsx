@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { Shield, Home, RotateCcw } from 'lucide-react';
 import type { QuestionResponse } from '@/types/quiz';
 
 interface ResultProps {
@@ -61,7 +62,11 @@ export function Result({ result, onRestart }: ResultProps) {
       <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 space-y-6">
         {/* Result header */}
         <div className="text-center space-y-4">
-          <div className="text-6xl">{emoji}</div>
+          <div className="flex justify-center items-center gap-3">
+            <Shield className="w-12 h-12 text-blue-600" />
+            <span className="text-6xl">{emoji}</span>
+            <Shield className="w-12 h-12 text-blue-600" />
+          </div>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
             {title}
           </h1>
@@ -149,16 +154,18 @@ export function Result({ result, onRestart }: ResultProps) {
           <div className="space-y-3">
             <button
               onClick={onRestart}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg text-lg transition-colors active:scale-95 transform"
-              style={{ minHeight: '44px' }}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg text-lg transition-colors active:scale-95 transform flex items-center justify-center gap-2"
+              style={{ minHeight: '56px' }}
             >
+              <RotateCcw className="w-5 h-5" />
               Fazer o Quiz Novamente
             </button>
             <Link
               href="/"
-              className="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-4 px-6 rounded-lg text-lg transition-colors text-center active:scale-95 transform"
-              style={{ minHeight: '44px' }}
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-lg text-lg transition-colors active:scale-95 transform flex items-center justify-center gap-2"
+              style={{ minHeight: '56px' }}
             >
+              <Home className="w-5 h-5" />
               Voltar ao Início
             </Link>
           </div>

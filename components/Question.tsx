@@ -12,11 +12,13 @@ import {
   Brain,
   Activity,
   Heart,
-  Wind,
+  MessageCircle,
   Bone,
+  Ruler,
   Scale,
-  Thermometer,
-  HelpCircle,
+  Stethoscope,
+  Hospital,
+  Shield,
   Info,
 } from 'lucide-react';
 import type { Question as QuestionType } from '@/types/quiz';
@@ -28,6 +30,16 @@ interface QuestionProps {
 
 // Map categories to icons
 const getCategoryIcon = (questionId: string, categoria?: string) => {
+  const id = questionId;
+
+  // Special handling for altura_peso category - differentiate height vs obesity
+  if (categoria === 'altura_peso') {
+    // P50_1, P50_2 are height questions → Ruler
+    if (id.match(/^P50_[12]$/)) return <Ruler className="w-6 h-6" />;
+    // P50_3, P50_3_1, P50_4 are weight/obesity questions → Scale
+    return <Scale className="w-6 h-6" />;
+  }
+
   // Check categoria first
   if (categoria) {
     const iconMap: Record<string, React.ReactNode> = {
@@ -36,18 +48,15 @@ const getCategoryIcon = (questionId: string, categoria?: string) => {
       saude_mental: <Brain className="w-6 h-6" />,
       neurologico: <Activity className="w-6 h-6" />,
       cardiovascular: <Heart className="w-6 h-6" />,
-      respiratorio: <Wind className="w-6 h-6" />,
+      respiratorio: <MessageCircle className="w-6 h-6" />,
       osteomuscular: <Bone className="w-6 h-6" />,
-      altura_peso: <Scale className="w-6 h-6" />,
-      infecciosas_cronicas: <Thermometer className="w-6 h-6" />,
-      outras: <HelpCircle className="w-6 h-6" />,
+      infecciosas_cronicas: <Stethoscope className="w-6 h-6" />,
+      outras: <Hospital className="w-6 h-6" />,
     };
     if (iconMap[categoria]) return iconMap[categoria];
   }
 
   // Fallback to question ID patterns
-  const id = questionId;
-
   // Demographics (P1-P4)
   if (id.match(/^P[1-4]$/)) return <User className="w-6 h-6" />;
 
@@ -69,14 +78,17 @@ const getCategoryIcon = (questionId: string, categoria?: string) => {
   if (id.match(/^P25/)) return <Brain className="w-6 h-6" />;
   if (id.match(/^P30/)) return <Activity className="w-6 h-6" />;
   if (id.match(/^P35/)) return <Heart className="w-6 h-6" />;
-  if (id.match(/^P40/)) return <Wind className="w-6 h-6" />;
+  if (id.match(/^P40/)) return <MessageCircle className="w-6 h-6" />;
   if (id.match(/^P45/)) return <Bone className="w-6 h-6" />;
+  // P50 height vs weight differentiation
+  if (id.match(/^P50_[12]$/)) return <Ruler className="w-6 h-6" />;
   if (id.match(/^P50/)) return <Scale className="w-6 h-6" />;
-  if (id.match(/^P55/)) return <Thermometer className="w-6 h-6" />;
-  if (id.match(/^P60/) || id === 'RESULTADO_FINAL') return <HelpCircle className="w-6 h-6" />;
+  if (id.match(/^P55/)) return <Stethoscope className="w-6 h-6" />;
+  if (id.match(/^P60/)) return <Hospital className="w-6 h-6" />;
+  if (id === 'RESULTADO_FINAL') return <Shield className="w-6 h-6" />;
   if (id === 'AVISO_FASE_6') return <Info className="w-6 h-6" />;
 
-  return <HelpCircle className="w-6 h-6" />;
+  return <Hospital className="w-6 h-6" />;
 };
 
 export function Question({ question, onAnswer }: QuestionProps) {
