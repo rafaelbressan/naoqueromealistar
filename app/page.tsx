@@ -5,7 +5,7 @@ export default function Home() {
     <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-blue-50 to-white">
       <div className="max-w-2xl w-full text-center space-y-8">
         <h1 className="text-4xl md:text-6xl font-bold text-gray-900">
-          Eu Não Quero Me Alistar
+          Não Quero Me Alistar
         </h1>
 
         <p className="text-xl md:text-2xl text-gray-700">

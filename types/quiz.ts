@@ -16,6 +16,7 @@ export interface QuestionResponse {
   proximo?: string;
   razao?: string;
   base_legal?: string;
+  link_legal?: string;
   tipo_dispensa?: string;
   nota?: string;
   dica?: string;

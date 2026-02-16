@@ -79,7 +79,18 @@ export function Result({ result, onRestart }: ResultProps) {
         {result.base_legal && (
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
             <h3 className="font-semibold text-gray-900 mb-2">Base Legal</h3>
-            <p className="text-gray-700 font-mono text-sm">{result.base_legal}</p>
+            {result.link_legal ? (
+              <a
+                href={result.link_legal}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 underline font-mono text-sm"
+              >
+                {result.base_legal} ↗
+              </a>
+            ) : (
+              <p className="text-gray-700 font-mono text-sm">{result.base_legal}</p>
+            )}
           </div>
         )}
 
