@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import type { QuestionResponse } from '@/types/quiz';
 
@@ -133,14 +134,23 @@ export function Result({ result, onRestart }: ResultProps) {
             </p>
           </div>
 
-          {/* Restart button */}
-          <button
-            onClick={onRestart}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg text-lg transition-colors active:scale-95 transform"
-            style={{ minHeight: '44px' }}
-          >
-            Fazer o Quiz Novamente
-          </button>
+          {/* Action buttons */}
+          <div className="space-y-3">
+            <button
+              onClick={onRestart}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg text-lg transition-colors active:scale-95 transform"
+              style={{ minHeight: '44px' }}
+            >
+              Fazer o Quiz Novamente
+            </button>
+            <Link
+              href="/"
+              className="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-4 px-6 rounded-lg text-lg transition-colors text-center active:scale-95 transform"
+              style={{ minHeight: '44px' }}
+            >
+              Voltar ao Início
+            </Link>
+          </div>
         </div>
       </div>
     </motion.div>

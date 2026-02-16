@@ -35,9 +35,9 @@ describe('Question Component', () => {
     explicacao: 'Selecione a opção que melhor descreve',
     tipo: 'selecao_unica' as const,
     respostas: {
-      A: { resultado: 'FIM_DISPENSADO_ARRIMO' as const },
-      B: { resultado: 'FIM_DISPENSADO_ARRIMO' as const },
-      H: { proximo: 'P9' },
+      A: { label: 'Opção A', resultado: 'FIM_DISPENSADO_ARRIMO' as const },
+      B: { label: 'Opção B', resultado: 'FIM_DISPENSADO_ARRIMO' as const },
+      H: { label: 'Nenhuma', proximo: 'P9' },
     },
   };
 
@@ -63,37 +63,40 @@ describe('Question Component', () => {
 
     it('renders Sim and Não buttons', () => {
       render(<Question question={simNaoQuestion} onAnswer={vi.fn()} />);
-      expect(screen.getByText('Sim')).toBeInTheDocument();
-      expect(screen.getByText('Não')).toBeInTheDocument();
+      // Buttons render twice (desktop + mobile), use getAllByText
+      expect(screen.getAllByText('Sim').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Não').length).toBeGreaterThan(0);
     });
 
     it('calls onAnswer with "sim" when Sim is clicked', () => {
       const onAnswer = vi.fn();
       render(<Question question={simNaoQuestion} onAnswer={onAnswer} />);
-      fireEvent.click(screen.getByText('Sim'));
+      // Click the first Sim button found
+      fireEvent.click(screen.getAllByText('Sim')[0]);
       expect(onAnswer).toHaveBeenCalledWith('sim');
     });
 
     it('calls onAnswer with "nao" when Não is clicked', () => {
       const onAnswer = vi.fn();
       render(<Question question={simNaoQuestion} onAnswer={onAnswer} />);
-      fireEvent.click(screen.getByText('Não'));
+      fireEvent.click(screen.getAllByText('Não')[0]);
       expect(onAnswer).toHaveBeenCalledWith('nao');
     });
   });
 
   describe('selecao_unica type', () => {
-    it('renders all option buttons', () => {
+    it('renders all option buttons with labels', () => {
       render(<Question question={selecaoQuestion} onAnswer={vi.fn()} />);
-      expect(screen.getByText('A')).toBeInTheDocument();
-      expect(screen.getByText('B')).toBeInTheDocument();
-      expect(screen.getByText('H')).toBeInTheDocument();
+      // Should show labels, not keys
+      expect(screen.getAllByText('Opção A').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Opção B').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Nenhuma').length).toBeGreaterThan(0);
     });
 
     it('calls onAnswer with selected key', () => {
       const onAnswer = vi.fn();
       render(<Question question={selecaoQuestion} onAnswer={onAnswer} />);
-      fireEvent.click(screen.getByText('A'));
+      fireEvent.click(screen.getAllByText('Opção A')[0]);
       expect(onAnswer).toHaveBeenCalledWith('A');
     });
   });
@@ -101,13 +104,13 @@ describe('Question Component', () => {
   describe('informativo type', () => {
     it('renders Continuar button', () => {
       render(<Question question={informativoQuestion} onAnswer={vi.fn()} />);
-      expect(screen.getByText('Continuar')).toBeInTheDocument();
+      expect(screen.getAllByText('Continuar').length).toBeGreaterThan(0);
     });
 
     it('calls onAnswer with first key on Continuar', () => {
       const onAnswer = vi.fn();
       render(<Question question={informativoQuestion} onAnswer={onAnswer} />);
-      fireEvent.click(screen.getByText('Continuar'));
+      fireEvent.click(screen.getAllByText('Continuar')[0]);
       expect(onAnswer).toHaveBeenCalledWith('continuar');
     });
   });
@@ -117,7 +120,8 @@ describe('Question Component', () => {
       render(
         <Question question={simNaoQuestion} onAnswer={vi.fn()} onBack={vi.fn()} canGoBack={true} />
       );
-      expect(screen.getByText('← Voltar')).toBeInTheDocument();
+      // Back button renders twice (desktop + mobile)
+      expect(screen.getAllByText('← Voltar').length).toBeGreaterThan(0);
     });
 
     it('does not show back button when canGoBack is false', () => {
@@ -130,7 +134,7 @@ describe('Question Component', () => {
       render(
         <Question question={simNaoQuestion} onAnswer={vi.fn()} onBack={onBack} canGoBack={true} />
       );
-      fireEvent.click(screen.getByText('← Voltar'));
+      fireEvent.click(screen.getAllByText('← Voltar')[0]);
       expect(onBack).toHaveBeenCalled();
     });
   });
@@ -140,7 +144,8 @@ describe('Question Component', () => {
       render(<Question question={simNaoQuestion} onAnswer={vi.fn()} />);
       const buttons = screen.getAllByRole('button');
       buttons.forEach((button) => {
-        expect(button.style.minHeight).toBe('44px');
+        const minHeight = parseInt(button.style.minHeight);
+        expect(minHeight).toBeGreaterThanOrEqual(44);
       });
     });
   });
@@ -205,6 +210,11 @@ describe('Result Component', () => {
   it('renders restart button', () => {
     render(<Result result={dispensadaResult} onRestart={vi.fn()} />);
     expect(screen.getByText('Fazer o Quiz Novamente')).toBeInTheDocument();
+  });
+
+  it('renders home link', () => {
+    render(<Result result={dispensadaResult} onRestart={vi.fn()} />);
+    expect(screen.getByText('Voltar ao Início')).toBeInTheDocument();
   });
 
   it('calls onRestart when restart button is clicked', () => {

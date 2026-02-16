@@ -171,41 +171,49 @@
     "tipo": "selecao_unica",
     "respostas": {
       "A": {
+        "label": "Minha mãe (sou filho único)",
         "resultado": "FIM_DISPENSADO_ARRIMO",
         "razao": "Filho único que serve de esteio à mãe",
         "base_legal": "Art. 105, §8º, nº 1 do Decreto 57.654/1966"
       },
       "B": {
+        "label": "Meu pai (incapaz de trabalhar)",
         "resultado": "FIM_DISPENSADO_ARRIMO",
         "razao": "Filho que sustenta pai incapaz",
         "base_legal": "Art. 105, §8º, nº 2 do Decreto 57.654/1966"
       },
       "C": {
+        "label": "Meu(s) filho(s) (sou viúvo/divorciado)",
         "resultado": "FIM_DISPENSADO_ARRIMO",
         "razao": "Viúvo/divorciado que sustenta filho menor",
         "base_legal": "Art. 105, §8º, nº 3 do Decreto 57.654/1966"
       },
       "D": {
+        "label": "Minha esposa e/ou filho(s) (sou casado)",
         "resultado": "FIM_DISPENSADO_ARRIMO",
         "razao": "Casado que sustenta esposa e/ou filho",
         "base_legal": "Art. 105, §8º, nº 4 do Decreto 57.654/1966"
       },
       "E": {
+        "label": "Meu filho menor (sou solteiro)",
         "resultado": "FIM_DISPENSADO_ARRIMO",
         "razao": "Solteiro que sustenta filho menor reconhecido",
         "base_legal": "Art. 105, §8º, nº 5 do Decreto 57.654/1966"
       },
       "F": {
+        "label": "Meus irmãos (sou órfão)",
         "resultado": "FIM_DISPENSADO_ARRIMO",
         "razao": "Órfão que sustenta irmãos",
         "base_legal": "Art. 105, §8º, nº 6 do Decreto 57.654/1966"
       },
       "G": {
+        "label": "Meus avós incapazes (sou órfão)",
         "resultado": "FIM_DISPENSADO_ARRIMO",
         "razao": "Órfão que sustenta avós incapazes",
         "base_legal": "Art. 105, §8º, nº 7 do Decreto 57.654/1966"
       },
       "H": {
+        "label": "Nenhuma dessas situações",
         "proximo": "P9"
       }
     }
@@ -312,22 +320,25 @@
   "P13": {
     "id": "P13",
     "pergunta": "Você está matriculado em algum desses cursos?",
-    "explicacao": "• CPOR/NPOR (Centro/Núcleo de Preparação de Oficiais da Reserva)\n• Escola Militar (EsPCEx, AMAN, etc.)\n• Curso de formação de oficiais da PM ou Bombeiros",
+    "explicacao": "Selecione a opção que se aplica à sua situação",
     "tipo": "selecao_unica",
     "respostas": {
       "CPOR_NPOR": {
+        "label": "CPOR/NPOR ou Escola Militar",
         "resultado": "FIM_DISPENSADO",
         "razao": "Você já está em formação militar específica",
         "base_legal": "Art. 105, nº 3 e 4 do Decreto 57.654/1966",
         "tipo_dispensa": "Dispensa de incorporação regular"
       },
       "PM_BOMBEIROS": {
+        "label": "Curso de PM ou Bombeiros",
         "resultado": "FIM_ADIAMENTO",
         "razao": "Formação em PM/Bombeiros gera adiamento",
         "base_legal": "Art. 98, nº 2, letra 'b' do Decreto 57.654/1966",
         "tipo_dispensa": "Adiamento de incorporação"
       },
       "NENHUM": {
+        "label": "Nenhum desses",
         "proximo": "P14"
       }
     }

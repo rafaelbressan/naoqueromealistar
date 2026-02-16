@@ -66,22 +66,17 @@ export function useQuizState() {
       }
 
       const newHistory = [...prevState.history];
-      const previousQuestionId = newHistory.pop();
+      const previousQuestionId = newHistory.pop(); // The question we're going back TO
 
-      // Remove the answer for the current question
+      // Remove the answer for that question so user can re-answer
       const newAnswers = new Map(prevState.answers);
       if (previousQuestionId) {
         newAnswers.delete(previousQuestionId);
       }
 
-      // Determine what the current question should be
-      const currentQuestionId = newHistory.length > 0
-        ? newHistory[newHistory.length - 1]
-        : 'P1';
-
       return {
-        currentQuestionId,
-        history: newHistory.slice(0, -1), // Remove one more since we're going back
+        currentQuestionId: previousQuestionId || 'P1',
+        history: newHistory,
         answers: newAnswers,
         result: null,
       };

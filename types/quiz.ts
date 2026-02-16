@@ -11,6 +11,7 @@ export type ResultadoType =
   | 'DICA_AVALIACAO_INDIVIDUAL';  // Case-by-case evaluation
 
 export interface QuestionResponse {
+  label?: string;
   resultado?: ResultadoType;
   proximo?: string;
   razao?: string;
