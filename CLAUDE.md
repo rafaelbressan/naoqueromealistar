@@ -479,11 +479,12 @@ When you start coding, you'll reference these files constantly:
 ## Implementation Roadmap
 
 ### MVP (Version 1)
-- [ ] Basic quiz engine (state machine)
-- [ ] All questions from QUIZ_TREE.md implemented
-- [ ] Results with legal basis displayed
-- [ ] Mobile-first responsive design
-- [ ] Basic transitions (fade in/out)
+- [x] Basic quiz engine (state machine)
+- [x] All questions from QUIZ_TREE.md implemented
+- [x] Results with legal basis displayed
+- [x] Mobile-first responsive design
+- [x] Basic transitions (fade in/out)
+- [x] Test suite (Vitest): tree validation, engine logic, critical paths, components (67 tests)
 
 ### Version 2
 - [ ] Enhanced micro-interactions (Framer Motion)
