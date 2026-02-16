@@ -1,4 +1,6 @@
-# Eu Não Quero Me Alistar
+# Não Quero Me Alistar
+
+> **[Acesse o Quiz Online](https://naoqueromealistar.netlify.app/)**
 
 Um quiz interativo que ajuda jovens brasileiros a descobrir se são elegíveis para dispensa do serviço militar obrigatório.
 
@@ -13,16 +15,16 @@ Este projeto oferece um quiz guiado que percorre as diversas categorias de dispe
 - Situação educacional
 - Condições médicas
 
-Cada resultado inclui a base legal completa, orientações sobre documentação necessária e próximos passos.
+Cada resultado inclui a base legal completa com link para a legislação oficial, orientações sobre documentação necessária e próximos passos.
 
 ## ⚖️ Base Legal
 
-O quiz é baseado na legislação vigente:
+O quiz é baseado na legislação vigente, com links diretos para as fontes oficiais:
 
-- Decreto 57.654/1966 (Regulamento da Lei do Serviço Militar - RLSM)
-- Decreto 703/1992 (IGISC - Instruções Gerais para Inspeção de Saúde)
-- Portaria 326-DGP/2019 (Normas Técnicas para JSM)
-- Constituição Federal de 1988
+- [Decreto 57.654/1966](https://www.planalto.gov.br/ccivil_03/decreto/d57654.htm) (Regulamento da Lei do Serviço Militar - RLSM)
+- [Decreto 703/1992](https://www.planalto.gov.br/ccivil_03/decreto/1990-1994/d0703.htm) (IGISC - Instruções Gerais para Inspeção de Saúde)
+- [Constituição Federal de 1988](https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm)
+- [Lei 6.880/1980](https://www.planalto.gov.br/ccivil_03/leis/l6880.htm) (Estatuto dos Militares)
 
 ## 🚀 Começando
 
@@ -49,12 +51,21 @@ npm run dev
 
 Abra [http://localhost:3000](http://localhost:3000) no seu navegador.
 
+### Testes
+
+```bash
+npm test         # Roda 67 testes
+npm run test:watch  # Modo watch
+```
+
 ## 🛠️ Tecnologias
 
 - **Next.js 16** - Framework React
 - **TypeScript** - Type safety
-- **Tailwind CSS** - Estilização mobile-first
+- **Tailwind CSS 4** - Estilização mobile-first
 - **Framer Motion** - Animações e transições
+- **Lucide React** - Ícones
+- **Vitest** - Testes unitários e de integração
 
 ## 📱 Mobile-First
 
@@ -62,7 +73,9 @@ O projeto foi desenvolvido com foco em dispositivos móveis:
 
 - Touch targets de 44px+ para fácil interação
 - Design responsivo
-- Transições suaves entre perguntas
+- Botões Sim/Não fixos na parte inferior (dock)
+- Navbar com navegação e menu hambúrguer
+- Ícones por categoria de pergunta
 - Otimizado para redes móveis
 
 ## 🧭 Estrutura do Projeto
@@ -74,15 +87,21 @@ O projeto foi desenvolvido com foco em dispositivos móveis:
 │   ├── quiz/page.tsx      # Quiz flow
 │   └── globals.css        # Global styles
 ├── components/            # React components
-│   ├── Question.tsx       # Question display
-│   ├── Result.tsx         # Result display
+│   ├── Navbar.tsx         # Top navigation with drawer
+│   ├── Question.tsx       # Question display with icons
+│   ├── Result.tsx         # Result display with legal links
 │   └── ProgressBar.tsx    # Progress indicator
 ├── data/                  # Quiz data
-│   └── quiz-tree.json     # Complete decision tree
+│   └── quiz-tree.json     # Complete decision tree (59 questions)
 ├── hooks/                 # Custom React hooks
 │   └── useQuizState.ts    # Quiz state machine
 ├── types/                 # TypeScript types
 │   └── quiz.ts            # Quiz interfaces
+├── tests/                 # Test suite
+│   ├── quiz-tree-validation.test.ts
+│   ├── quiz-engine.test.ts
+│   ├── critical-paths.test.ts
+│   └── components.test.tsx
 └── context/               # Project documentation
     ├── PROJECT_CONTEXT.md
     ├── QUIZ_TREE.md
@@ -91,7 +110,7 @@ O projeto foi desenvolvido com foco em dispositivos móveis:
 
 ## ⚠️ Aviso Legal
 
-Este quiz tem fins informativos e não substitui orientação jurídica profissional. As informações são baseadas na legislação vigente em Janeiro de 2025. Consulte um advogado ou a JSM local para casos específicos.
+Este quiz tem fins informativos e não substitui orientação jurídica profissional. As informações são baseadas na legislação vigente. Consulte um advogado ou a JSM local para casos específicos.
 
 ## 🤝 Contribuindo
 
