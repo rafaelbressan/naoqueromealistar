@@ -851,3 +851,65 @@ Future Claude session, here's your TL;DR:
 ---
 
 *Good luck, and remember: you're building something that helps young people understand their legal rights. That's meaningful work. Make it accurate, make it accessible, make it helpful.*
+
+---
+
+## gstack
+
+Use the `/browse` skill from gstack for all web browsing. Never use `mcp__claude-in-chrome__*` tools.
+
+### Available gstack skills
+
+- `/office-hours` — async Q&A with subject-matter experts
+- `/plan-ceo-review` — CEO-level plan review
+- `/plan-eng-review` — engineering plan review
+- `/plan-design-review` — design plan review
+- `/design-consultation` — design consultation
+- `/design-shotgun` — rapid design exploration
+- `/design-html` — HTML/CSS design output
+- `/review` — code review
+- `/ship` — ship a change end-to-end
+- `/land-and-deploy` — land and deploy a change
+- `/canary` — canary deploy
+- `/benchmark` — run benchmarks
+- `/browse` — web browsing (use this for all web browsing)
+- `/connect-chrome` — connect to a Chrome browser
+- `/qa` — full QA pass
+- `/qa-only` — QA without setup
+- `/design-review` — review a design
+- `/setup-browser-cookies` — set up browser cookies
+- `/setup-deploy` — set up deployment
+- `/retro` — retrospective
+- `/investigate` — investigate an issue
+- `/document-release` — document a release
+- `/codex` — codex lookup
+- `/cso` — chief security officer review
+- `/autoplan` — auto-generate a plan
+- `/plan-devex-review` — developer experience plan review
+- `/devex-review` — developer experience review
+- `/careful` — careful/cautious mode
+- `/freeze` — freeze changes
+- `/guard` — guard mode
+- `/unfreeze` — unfreeze changes
+- `/gstack-upgrade` — upgrade gstack to latest
+- `/learn` — learning mode
+
+## Skill routing
+
+When the user's request matches an available skill, ALWAYS invoke it using the Skill
+tool as your FIRST action. Do NOT answer directly, do NOT use other tools first.
+The skill has specialized workflows that produce better results than ad-hoc answers.
+
+Key routing rules:
+- Product ideas, "is this worth building", brainstorming → invoke office-hours
+- Bugs, errors, "why is this broken", 500 errors → invoke investigate
+- Ship, deploy, push, create PR → invoke ship
+- QA, test the site, find bugs → invoke qa
+- Code review, check my diff → invoke review
+- Update docs after shipping → invoke document-release
+- Weekly retro → invoke retro
+- Design system, brand → invoke design-consultation
+- Visual audit, design polish → invoke design-review
+- Architecture review → invoke plan-eng-review
+- Save progress, checkpoint, resume → invoke checkpoint
+- Code quality, health check → invoke health
