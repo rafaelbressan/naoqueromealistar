@@ -23,7 +23,7 @@ export function Navbar({ title, canGoBack, onBack }: NavbarProps) {
             <button
               onClick={onBack}
               disabled={!canGoBack}
-              className={`p-2 rounded-lg transition-colors ${
+              className={`p-2 rounded-lg t-btn-icon ${
                 canGoBack
                   ? 'text-gray-700 hover:bg-gray-100 active:bg-gray-200'
                   : 'text-gray-300 cursor-not-allowed'
@@ -42,7 +42,7 @@ export function Navbar({ title, canGoBack, onBack }: NavbarProps) {
             {/* Hamburger menu */}
             <button
               onClick={() => setIsDrawerOpen(true)}
-              className="p-2 rounded-lg text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+              className="p-2 rounded-lg text-gray-700 hover:bg-gray-100 active:bg-gray-200 t-btn-icon"
               style={{ minWidth: '44px', minHeight: '44px' }}
               aria-label="Menu"
             >
@@ -72,7 +72,7 @@ export function Navbar({ title, canGoBack, onBack }: NavbarProps) {
             <span className="text-lg font-semibold text-gray-900">Menu</span>
             <button
               onClick={() => setIsDrawerOpen(false)}
-              className="p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-lg text-gray-700 hover:bg-gray-100 t-btn-icon"
               style={{ minWidth: '44px', minHeight: '44px' }}
               aria-label="Fechar menu"
             >
@@ -86,7 +86,7 @@ export function Navbar({ title, canGoBack, onBack }: NavbarProps) {
               <li>
                 <Link
                   href="/"
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 t-btn-icon"
                   onClick={() => setIsDrawerOpen(false)}
                 >
                   <Home className="w-5 h-5" />
@@ -96,7 +96,7 @@ export function Navbar({ title, canGoBack, onBack }: NavbarProps) {
               <li>
                 <Link
                   href="/quiz"
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 t-btn-icon"
                   onClick={() => setIsDrawerOpen(false)}
                 >
                   <FileText className="w-5 h-5" />
@@ -106,7 +106,7 @@ export function Navbar({ title, canGoBack, onBack }: NavbarProps) {
               <li>
                 <Link
                   href="/"
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 t-btn-icon"
                   onClick={() => setIsDrawerOpen(false)}
                 >
                   <HelpCircle className="w-5 h-5" />

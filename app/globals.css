@@ -105,6 +105,72 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+ * Button interactions
+ *
+ * Two variants because the two button families want different things:
+ *
+ *   .t-btn       primary actions — hover lift plus press scale
+ *   .t-btn-icon  icon and nav buttons — press only. A 4px lift on a 44px
+ *                icon button inside a fixed navbar reads as jitter, not
+ *                polish.
+ *
+ * Both enumerate their transition properties on purpose. `transition: all`
+ * would let unrelated style changes ride along for free.
+ * ------------------------------------------------------------------------- */
+
+.t-btn,
+.t-btn-icon {
+  transition:
+    background-color var(--duration-quick) var(--ease-smooth-out),
+    color var(--duration-quick) var(--ease-smooth-out),
+    transform var(--duration-quick) var(--ease-smooth-out),
+    box-shadow var(--duration-quick) var(--ease-smooth-out);
+  will-change: transform;
+}
+
+/*
+ * Hover effects only where hovering is real. On touch, :hover sticks after
+ * a tap, so an unguarded lift leaves the last-pressed button floating.
+ */
+@media (hover: hover) {
+  .t-btn:hover:not(:disabled) {
+    transform: translateY(calc(-1 * var(--distance-micro)));
+  }
+}
+
+/*
+ * Press is faster than release (--duration-micro, not --duration-quick).
+ * Matching them makes the button feel rubbery: the finger is already gone
+ * before the surface acknowledges it.
+ */
+.t-btn:active:not(:disabled),
+.t-btn-icon:active:not(:disabled) {
+  transform: scale(var(--scale-large));
+  transition-duration: var(--duration-micro);
+}
+
+.t-btn:disabled,
+.t-btn-icon:disabled {
+  transform: none;
+}
+
+.t-btn:focus-visible,
+.t-btn-icon:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-btn,
+  .t-btn:hover,
+  .t-btn:active,
+  .t-btn-icon,
+  .t-btn-icon:active {
+    transform: none;
+  }
+}
+
 body {
   color: var(--foreground);
   background: var(--background);

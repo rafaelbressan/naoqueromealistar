@@ -19,7 +19,7 @@ export default function Home() {
 
           <Link
             href="/quiz"
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg text-lg transition-colors"
+            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg text-lg t-btn"
             style={{ minHeight: "44px", minWidth: "44px" }}
           >
             Começar Quiz

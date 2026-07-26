@@ -88,14 +88,14 @@ export function Question({ question, onAnswer }: QuestionProps) {
         <div className="flex gap-3">
           <button
             onClick={() => onAnswer('sim')}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-lg text-lg transition-colors active:scale-95 transform"
+            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-lg text-lg t-btn"
             style={{ minHeight: '56px' }}
           >
             Sim
           </button>
           <button
             onClick={() => onAnswer('nao')}
-            className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-6 rounded-lg text-lg transition-colors active:scale-95 transform"
+            className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-6 rounded-lg text-lg t-btn"
             style={{ minHeight: '56px' }}
           >
             Não
@@ -111,7 +111,7 @@ export function Question({ question, onAnswer }: QuestionProps) {
             <button
               key={key}
               onClick={() => onAnswer(key)}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg text-lg transition-colors text-left active:scale-95 transform"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg text-lg t-btn text-left"
               style={{ minHeight: '56px' }}
             >
               {value.label || key}
@@ -126,7 +126,7 @@ export function Question({ question, onAnswer }: QuestionProps) {
       return (
         <button
           onClick={() => onAnswer(nextKey)}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg text-lg transition-colors active:scale-95 transform"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg text-lg t-btn"
           style={{ minHeight: '56px' }}
         >
           Continuar
