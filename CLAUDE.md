@@ -65,7 +65,7 @@ Backend:
 └── Optional: Analytics to see common paths
 
 Hosting:
-└── Vercel or Netlify (free tier, easy deploys)
+└── Vercel (free tier, easy deploys)
 ```
 
 ### Why These Choices?
@@ -825,7 +825,7 @@ Future Claude session, here's your TL;DR:
 3. **Understand**: This is a state machine quiz based on Brazilian military service law
 4. **Implement**: Convert quiz tree to JSON, build React state machine, create UI
 5. **Test**: Every path through the tree must be verified
-6. **Deploy**: Vercel/Netlify, mobile-first
+6. **Deploy**: Vercel, mobile-first
 
 **Key constraints:**
 - Every result needs legal citation
