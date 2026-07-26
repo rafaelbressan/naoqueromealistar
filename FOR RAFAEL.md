@@ -27,7 +27,7 @@ Each result includes the **exact law citation** with **clickable link** to the o
 | Animations | Framer Motion 12 |
 | Icons | Lucide React |
 | Testing | Vitest + React Testing Library |
-| Deployment | Netlify (static export) |
+| Deployment | Vercel (static export) |
 
 ---
 
@@ -86,7 +86,7 @@ P1 → NO → P2 (trans woman?) → NO → P3 → ... → medical questions → 
 - Navigation drawer (home, quiz, about)
 - Category icons on each question (Lucide icons)
 - Test suite: 67 tests passing
-- Deployed to Netlify
+- Deployed to Vercel
 
 ### Not Yet Done (V2/V3)
 - Enhanced animations
@@ -150,9 +150,11 @@ The quiz provides **informational guidance only** based on Brazilian law. It doe
 
 ## Deployment
 
-- **Platform**: Netlify
-- **Build**: `npm run build` → outputs to `out/` folder
-- **Auto-deploy**: Connected to GitHub, deploys on push to main
+- **Platform**: Vercel — https://naoqueromealistar.vercel.app
+- **Build**: `npm run build` → outputs to `out/` folder (static export)
+- **Manual deploy**: `vercel deploy --prod` from the repo root
+- **Auto-deploy**: connect the GitHub repo under the project's Git settings on
+  vercel.com. Until that is linked, every release needs the manual command above.
 
 ---
 

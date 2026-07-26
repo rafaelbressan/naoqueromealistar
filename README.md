@@ -1,6 +1,6 @@
 # Não Quero Me Alistar
 
-> **[Acesse o Quiz Online](https://naoqueromealistar.netlify.app/)**
+> **[Acesse o Quiz Online](https://naoqueromealistar.vercel.app/)**
 
 Um quiz interativo que ajuda jovens brasileiros a descobrir se são elegíveis para dispensa do serviço militar obrigatório.
 
