@@ -138,43 +138,51 @@ export function Question({ question, onAnswer }: QuestionProps) {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      className="w-full max-w-2xl mx-auto"
-    >
-      {/* Content area with padding for bottom dock on mobile */}
-      <div className="p-4 md:p-6 pb-28 md:pb-6">
-        <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
-          {/* Question header with icon */}
-          <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
-              {icon}
+    <>
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
+        className="w-full max-w-2xl mx-auto"
+      >
+        {/* Content area with padding for bottom dock on mobile */}
+        <div className="p-4 md:p-6 pb-28 md:pb-6">
+          <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
+            {/* Question header with icon */}
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                {icon}
+              </div>
+              <div className="flex-1 space-y-3">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                  {question.pergunta}
+                </h2>
+                {question.explicacao && (
+                  <p className="text-gray-600 text-base whitespace-pre-line">
+                    {question.explicacao}
+                  </p>
+                )}
+              </div>
             </div>
-            <div className="flex-1 space-y-3">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-                {question.pergunta}
-              </h2>
-              {question.explicacao && (
-                <p className="text-gray-600 text-base whitespace-pre-line">
-                  {question.explicacao}
-                </p>
-              )}
-            </div>
-          </div>
 
-          {/* Answer buttons - desktop only */}
-          <div className="hidden md:block pt-6">
-            {renderAnswerButtons()}
+            {/* Answer buttons - desktop only */}
+            <div className="hidden md:block pt-6">
+              {renderAnswerButtons()}
+            </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Fixed bottom dock on mobile */}
+      {/*
+        Fixed bottom dock on mobile. Deliberately a sibling of the animated
+        motion.div, not a child: a transformed ancestor becomes the containing
+        block for position:fixed descendants, so nesting it would make the dock
+        slide with the question and snap back when the transform is removed.
+      */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
         {renderAnswerButtons()}
       </div>
-    </motion.div>
+    </>
   );
 }

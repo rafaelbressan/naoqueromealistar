@@ -56,6 +56,8 @@ export function Result({ result, onRestart }: ResultProps) {
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
       className="w-full max-w-2xl mx-auto p-6"
     >
       <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 space-y-6">
