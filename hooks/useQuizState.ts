@@ -1,10 +1,30 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import type { Question, QuestionResponse, QuizState } from '@/types/quiz';
+import type { Question, QuestionResponse, QuizState, PeekResult } from '@/types/quiz';
 import quizTreeData from '@/data/quiz-tree.json';
 
 const quizTree = quizTreeData as Record<string, Question>;
+
+/**
+ * Resolve where an answer would lead without taking it.
+ *
+ * Pure over the tree, deliberately outside the hook: this feeds the lookahead
+ * card behind the current one, which renders while the user is still dragging
+ * and has not decided anything. Peeking must never touch history or answers.
+ *
+ * Returns null when the question or the answer key does not exist, which also
+ * covers the branch that has neither `proximo` nor `resultado`.
+ */
+export function peek(questionId: string, answerKey: string): PeekResult | null {
+  const response = quizTree[questionId]?.respostas[answerKey];
+  if (!response) return null;
+
+  if (response.resultado) return { kind: 'result', result: response };
+
+  const next = response.proximo ? quizTree[response.proximo] : undefined;
+  return next ? { kind: 'question', question: next } : null;
+}
 
 export function useQuizState() {
   const [state, setState] = useState<QuizState>({
@@ -12,6 +32,7 @@ export function useQuizState() {
     history: [],
     answers: new Map(),
     result: null,
+    lastDirection: null,
   });
 
   const currentQuestion = state.currentQuestionId
@@ -46,6 +67,7 @@ export function useQuizState() {
           history: newHistory,
           answers: newAnswers,
           result: response,
+          lastDirection: 'forward',
         };
       }
 
@@ -55,6 +77,7 @@ export function useQuizState() {
         history: newHistory,
         answers: newAnswers,
         result: null,
+        lastDirection: 'forward',
       };
     });
   }, []);
@@ -79,6 +102,7 @@ export function useQuizState() {
         history: newHistory,
         answers: newAnswers,
         result: null,
+        lastDirection: 'back',
       };
     });
   }, []);
@@ -89,6 +113,7 @@ export function useQuizState() {
       history: [],
       answers: new Map(),
       result: null,
+      lastDirection: null,
     });
   }, []);
 
@@ -100,6 +125,8 @@ export function useQuizState() {
     result: state.result,
     history: state.history,
     answers: state.answers,
+    lastDirection: state.lastDirection,
+    peek,
     handleAnswer,
     goBack,
     restart,
