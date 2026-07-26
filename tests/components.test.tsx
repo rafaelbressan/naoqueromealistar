@@ -1,21 +1,73 @@
+import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Question } from '../components/Question';
 import { Result } from '../components/Result';
 
-// Mock framer-motion to avoid animation issues in tests
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({
-      children,
-      ...props
-    }: {
-      children: React.ReactNode;
-      [key: string]: any;
-    }) => <div {...props}>{children}</div>,
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
+/**
+ * Mock framer-motion so these tests assert markup rather than animation.
+ *
+ * The motion-only props have to be stripped, not just spread: passing
+ * `variants` or a MotionValue-bearing `style` straight to a DOM node makes
+ * React throw. Anything the components actually read at render time
+ * (useMotionValue, useTransform, useReducedMotion) gets a inert stand-in.
+ *
+ * Motion behaviour is covered where it can be tested honestly:
+ * tests/swipe.test.ts for the commit rule, tests/motion-tokens.test.ts for the
+ * scale, tests/dock-containing-block.test.tsx against the real library.
+ */
+vi.mock('framer-motion', () => {
+  const MOTION_PROPS = new Set([
+    'initial', 'animate', 'exit', 'variants', 'transition', 'custom',
+    'whileHover', 'whileTap', 'whileDrag', 'whileFocus', 'whileInView',
+    'drag', 'dragConstraints', 'dragElastic', 'dragDirectionLock',
+    'dragMomentum', 'onDrag', 'onDragEnd', 'onDragStart', 'layout', 'layoutId',
+  ]);
+
+  const stripMotionProps = (props: Record<string, any>) => {
+    const clean: Record<string, any> = {};
+    for (const [key, value] of Object.entries(props)) {
+      if (MOTION_PROPS.has(key)) continue;
+      // style may hold MotionValues, which React cannot render.
+      if (key === 'style' && value) {
+        clean.style = Object.fromEntries(
+          Object.entries(value).filter(([, v]) => typeof v !== 'object')
+        );
+        continue;
+      }
+      clean[key] = value;
+    }
+    return clean;
+  };
+
+  const makeComponent = (tag: string) =>
+    function MockMotion({ children, ...props }: { children?: React.ReactNode; [key: string]: any }) {
+      return React.createElement(tag, stripMotionProps(props), children);
+    };
+
+  return {
+    motion: new Proxy({} as Record<string, any>, {
+      get: (target, tag: string) => {
+        if (!target[tag]) target[tag] = makeComponent(tag);
+        return target[tag];
+      },
+    }),
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    useMotionValue: (initial: number) => ({
+      get: () => initial,
+      set: () => {},
+      on: () => () => {},
+      onChange: () => () => {},
+    }),
+    useTransform: () => ({
+      get: () => 0,
+      set: () => {},
+      on: () => () => {},
+      onChange: () => () => {},
+    }),
+    useReducedMotion: () => false,
+  };
+});
 
 describe('Question Component', () => {
   const simNaoQuestion = {

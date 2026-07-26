@@ -20,10 +20,17 @@ import {
   Info,
 } from 'lucide-react';
 import type { Question as QuestionType } from '@/types/quiz';
+import { AnswerButtons } from './AnswerButtons';
+import { SwipeCard } from './motion/SwipeCard';
+import { DURATION, EASE, DISTANCE, BLUR } from '@/lib/motion';
 
 interface QuestionProps {
   question: QuestionType;
   onAnswer: (answerKey: string) => void;
+  /** Which side the card slides in from. Going back must not look like going forward. */
+  enterFrom?: 'left' | 'right';
+  /** Reports drag position (-1..1) so the page can pick which lookahead to show. */
+  onDragProgress?: (progress: number) => void;
 }
 
 // Map categories to icons
@@ -79,110 +86,105 @@ const getCategoryIcon = (questionId: string, categoria?: string) => {
   return <HelpCircle className="w-6 h-6" />;
 };
 
-export function Question({ question, onAnswer }: QuestionProps) {
+/**
+ * The card face. Also used to render the lookahead card behind the current
+ * one, which is why it takes no handlers.
+ */
+export function QuestionFace({ question }: { question: QuestionType }) {
   const icon = getCategoryIcon(question.id, question.categoria);
 
-  const renderAnswerButtons = () => {
-    if (question.tipo === 'sim_nao') {
-      return (
-        <div className="flex gap-3">
-          <button
-            onClick={() => onAnswer('sim')}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-lg text-lg t-btn"
-            style={{ minHeight: '56px' }}
-          >
-            Sim
-          </button>
-          <button
-            onClick={() => onAnswer('nao')}
-            className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-6 rounded-lg text-lg t-btn"
-            style={{ minHeight: '56px' }}
-          >
-            Não
-          </button>
-        </div>
-      );
-    }
-
-    if (question.tipo === 'selecao_unica') {
-      return (
-        <div className="space-y-3">
-          {Object.entries(question.respostas).map(([key, value]) => (
-            <button
-              key={key}
-              onClick={() => onAnswer(key)}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg text-lg t-btn text-left"
-              style={{ minHeight: '56px' }}
-            >
-              {value.label || key}
-            </button>
-          ))}
-        </div>
-      );
-    }
-
-    if (question.tipo === 'informativo') {
-      const nextKey = Object.keys(question.respostas)[0];
-      return (
-        <button
-          onClick={() => onAnswer(nextKey)}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg text-lg t-btn"
-          style={{ minHeight: '56px' }}
-        >
-          Continuar
-        </button>
-      );
-    }
-
-    return null;
-  };
-
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -20 }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
-        className="w-full max-w-2xl mx-auto"
-      >
-        {/* Content area with padding for bottom dock on mobile */}
-        <div className="p-4 md:p-6 pb-28 md:pb-6">
-          <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
-            {/* Question header with icon */}
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
-                {icon}
-              </div>
-              <div className="flex-1 space-y-3">
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-                  {question.pergunta}
-                </h2>
-                {question.explicacao && (
-                  <p className="text-gray-600 text-base whitespace-pre-line">
-                    {question.explicacao}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Answer buttons - desktop only */}
-            <div className="hidden md:block pt-6">
-              {renderAnswerButtons()}
-            </div>
-          </div>
+    <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
+      <div className="flex items-start gap-4">
+        {/*
+         * Icon swap: the icon cross-fades through blur when the category
+         * changes, rather than cutting. Keyed on the icon identity so it only
+         * replays when the category actually moves.
+         */}
+        <motion.div
+          key={question.categoria ?? question.id}
+          initial={{ opacity: 0, filter: `blur(${BLUR.small}px)` }}
+          animate={{ opacity: 1, filter: 'blur(0px)' }}
+          transition={{ duration: DURATION.fast, ease: EASE.smoothOut }}
+          className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600"
+        >
+          {icon}
+        </motion.div>
+        <div className="flex-1 space-y-3">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+            {question.pergunta}
+          </h2>
+          {question.explicacao && (
+            <p className="text-gray-600 text-base whitespace-pre-line">
+              {question.explicacao}
+            </p>
+          )}
         </div>
-      </motion.div>
-
-      {/*
-        Fixed bottom dock on mobile. Deliberately a sibling of the animated
-        motion.div, not a child: a transformed ancestor becomes the containing
-        block for position:fixed descendants, so nesting it would make the dock
-        slide with the question and snap back when the transform is removed.
-      */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
-        {renderAnswerButtons()}
       </div>
-    </>
+    </div>
+  );
+}
+
+/**
+ * Variants are shared by every exit path so that tapping "Sim" and swiping
+ * right produce the same motion. If the button faded while the swipe slid,
+ * the user would be learning two languages for one action.
+ *
+ * `custom` carries the committed direction, supplied by AnimatePresence at
+ * the moment the card is removed.
+ */
+const cardVariants = {
+  enter: (enterFrom: 'left' | 'right') => ({
+    opacity: 0,
+    x: enterFrom === 'right' ? DISTANCE.base : -DISTANCE.base,
+    filter: `blur(${BLUR.medium}px)`,
+  }),
+  center: {
+    opacity: 1,
+    x: 0,
+    filter: 'blur(0px)',
+    transition: { duration: DURATION.fast, ease: EASE.smoothOut },
+  },
+  exit: (direction: 'left' | 'right' | 'neutral') => ({
+    opacity: 0,
+    x: direction === 'right' ? '140vw' : direction === 'left' ? '-140vw' : 0,
+    filter: `blur(${BLUR.medium}px)`,
+    transition: { duration: DURATION.fast, ease: EASE.smoothOut },
+  }),
+};
+
+export function Question({
+  question,
+  onAnswer,
+  enterFrom = 'right',
+  onDragProgress,
+}: QuestionProps) {
+  return (
+    <motion.div
+      custom={enterFrom}
+      variants={cardVariants}
+      initial="enter"
+      animate="center"
+      exit="exit"
+      className="w-full max-w-2xl mx-auto"
+    >
+      {/* Bottom padding leaves room for the dock, which the page renders. */}
+      <div className="p-4 md:p-6 pb-28 md:pb-6">
+        <SwipeCard
+          enabled={question.tipo === 'sim_nao'}
+          leftLabel="NÃO"
+          rightLabel="SIM"
+          onCommit={(direction) => onAnswer(direction === 'right' ? 'sim' : 'nao')}
+          onDragProgress={onDragProgress}
+        >
+          <QuestionFace question={question} />
+        </SwipeCard>
+
+        {/* Answer buttons - desktop only. Mobile gets the fixed dock instead. */}
+        <div className="hidden md:block pt-6">
+          <AnswerButtons question={question} onAnswer={onAnswer} />
+        </div>
+      </div>
+    </motion.div>
   );
 }
