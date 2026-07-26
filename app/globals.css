@@ -12,6 +12,99 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+ * Motion tokens
+ *
+ * Single source of truth for every animation in the app. Scale adapted from
+ * transitions.dev; the stack and swipe groups are derived from amicro's
+ * CardTimeMachine. Mirrored in lib/motion.ts for Framer Motion, which needs
+ * numbers rather than var() — tests/motion-tokens.test.ts asserts the two
+ * stay in sync.
+ *
+ * Pick a token by its USAGE, not by the nearest number. A 300ms modal close
+ * maps to --duration-quick (150ms) because both are "modal close".
+ *
+ * Opening is slower than closing: opening presents, closing gets out of the way.
+ * ------------------------------------------------------------------------- */
+
+:root {
+  /* Durations */
+  --duration-stagger: 40ms;      /* per-item stagger offset */
+  --duration-micro: 80ms;        /* button press, tooltip delay, shake segment */
+  --duration-quick: 150ms;       /* modal/dropdown close, text swap */
+  --duration-fast: 250ms;        /* icon swap, dropdown/modal open, card change */
+  --duration-medium: 350ms;      /* panel close, toast close */
+  --duration-slow: 400ms;        /* panel open, progress bar */
+  --duration-very-slow: 500ms;   /* emphasis moments, result reveal */
+
+  /* Easings */
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: ease-in-out;
+  --ease-out: ease-out;
+  --ease-linear: linear;
+  --ease-bounce: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --ease-bounce-strong: cubic-bezier(0.34, 3.85, 0.64, 1);
+
+  /* Distances — where a surface animates FROM (it always settles at 0) */
+  --distance-micro: 4px;
+  --distance-small: 6px;
+  --distance-base: 8px;
+  --distance-medium: 12px;
+  --distance-large: 30px;
+
+  /* Scales — where a surface animates FROM (it always settles at 1) */
+  --scale-large: 0.96;
+  --scale-medium: 0.97;
+  --scale-small: 0.98;
+  --scale-tiny: 0.99;
+
+  /* Blur — where a surface animates FROM (it always settles at 0) */
+  --blur-small: 2px;
+  --blur-medium: 3px;
+  --blur-large: 8px;
+
+  /* Card stack */
+  --stack-perspective: 800px;
+  --stack-z-step: -60px;
+  --stack-y-step: -12px;
+  --stack-rotate-step: 2deg;
+  --stack-opacity-step: 0.2;
+  --stack-depth: 2;
+
+  /* Swipe */
+  --swipe-commit-x: 110px;
+  --swipe-commit-v: 500;
+  --swipe-rotate-max: 12deg;
+  --swipe-exit-x: 140vw;
+}
+
+/*
+ * Reduced motion strips decoration, never function. The swipe gesture keeps
+ * working here — it is an input method, not an ornament. What goes away is
+ * rotation, depth, blur and stagger.
+ *
+ * tests/motion-tokens.test.ts must read the :root block above and ignore
+ * this one.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-stagger: 0ms;
+    --duration-micro: 0ms;
+    --duration-quick: 0ms;
+    --duration-fast: 0ms;
+    --duration-medium: 0ms;
+    --duration-slow: 0ms;
+    --duration-very-slow: 0ms;
+
+    --stack-rotate-step: 0deg;
+    --swipe-rotate-max: 0deg;
+
+    --blur-small: 0px;
+    --blur-medium: 0px;
+    --blur-large: 0px;
+  }
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
