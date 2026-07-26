@@ -4,6 +4,7 @@ import path from 'path';
 import {
   DURATION,
   EASE,
+  EASE_KEYWORD,
   DISTANCE,
   SCALE,
   BLUR,
@@ -143,6 +144,23 @@ describe('motion token parity: lib/motion.ts vs app/globals.css', () => {
     });
   });
 
+  describe('keyword easings', () => {
+    // Names, not curves — compared against the CSS keyword rather than parsed.
+    const cases: Array<[keyof typeof EASE_KEYWORD, string, string]> = [
+      ['inOut', '--ease-in-out', 'ease-in-out'],
+      ['out', '--ease-out', 'ease-out'],
+      ['linear', '--ease-linear', 'linear'],
+    ];
+
+    it.each(cases)('EASE_KEYWORD.%s matches %s', (key, cssName, cssValue) => {
+      expect(
+        tokens[cssName],
+        `Motion token drift: EASE_KEYWORD.${key} is "${EASE_KEYWORD[key]}" and expects ` +
+          `${cssName} to be "${cssValue}", but app/globals.css has "${tokens[cssName]}".`
+      ).toBe(cssValue);
+    });
+  });
+
   describe('distances', () => {
     const cases: Array<[keyof typeof DISTANCE, string]> = [
       ['micro', '--distance-micro'],
@@ -220,6 +238,79 @@ describe('motion token parity: lib/motion.ts vs app/globals.css', () => {
     it('SWIPE.rotateMax matches --swipe-rotate-max', () => {
       expectMatch('SWIPE.rotateMax', SWIPE.rotateMax, '--swipe-rotate-max', num('--swipe-rotate-max', 'deg'));
     });
+  });
+});
+
+/**
+ * Extract the declarations inside the prefers-reduced-motion block.
+ * Complements parseRootTokens, which deliberately skips it.
+ */
+function parseReducedMotionTokens(css: string): Record<string, string> {
+  const withoutComments = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  const start = withoutComments.indexOf('@media (prefers-reduced-motion: reduce)');
+  if (start === -1) return {};
+
+  const open = withoutComments.indexOf('{', start);
+  let depth = 1;
+  let i = open + 1;
+  while (i < withoutComments.length && depth > 0) {
+    if (withoutComments[i] === '{') depth++;
+    else if (withoutComments[i] === '}') depth--;
+    i++;
+  }
+
+  const body = withoutComments.slice(open + 1, i - 1);
+  const out: Record<string, string> = {};
+  for (const decl of body.split(';')) {
+    const match = decl.match(/\s*(--[\w-]+)\s*:\s*([^;{}]+?)\s*$/);
+    if (match) out[match[1]] = match[2];
+  }
+  return out;
+}
+
+const reducedTokens = parseReducedMotionTokens(readFileSync(CSS_PATH, 'utf-8'));
+
+describe('reduced motion coverage', () => {
+  /*
+   * Reduced motion strips decoration, never function — see RISK 4. What is
+   * asserted here is that nothing new can be added to the scale and quietly
+   * skip the guard: every duration declared in :root has to be answered in
+   * the reduce block, or someone's next token animates at full speed for a
+   * user who asked for stillness.
+   */
+  const durationTokens = Object.keys(tokens).filter((t) => t.startsWith('--duration-'));
+
+  it('declares at least one duration to check', () => {
+    expect(durationTokens.length).toBeGreaterThan(0);
+  });
+
+  it.each(durationTokens)('%s is zeroed under reduced motion', (name) => {
+    expect(
+      reducedTokens[name],
+      `${name} is not overridden in the prefers-reduced-motion block of ` +
+        `app/globals.css. Every duration token must be answered there.`
+    ).toBe('0ms');
+  });
+
+  it.each(['--blur-small', '--blur-medium', '--blur-large'])(
+    '%s is zeroed under reduced motion',
+    (name) => {
+      expect(reducedTokens[name]).toBe('0px');
+    }
+  );
+
+  it.each(['--stack-rotate-step', '--swipe-rotate-max'])(
+    '%s is zeroed under reduced motion',
+    (name) => {
+      expect(reducedTokens[name]).toBe('0deg');
+    }
+  );
+
+  it('keeps the swipe commit thresholds intact', () => {
+    // Swiping is an input method. Zeroing these would make the gesture either
+    // impossible or hair-trigger, which is not what "less motion" means.
+    expect(reducedTokens['--swipe-commit-x']).toBeUndefined();
+    expect(reducedTokens['--swipe-commit-v']).toBeUndefined();
   });
 });
 

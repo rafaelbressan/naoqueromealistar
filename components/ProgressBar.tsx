@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { DURATION, EASE, EASE_KEYWORD, DISTANCE, BLUR } from '@/lib/motion';
 
 interface ProgressBarProps {
   currentQuestionId: string | null;
@@ -86,15 +87,31 @@ export function ProgressBar({ currentQuestionId, totalAnswered }: ProgressBarPro
           <span className="text-xs font-medium text-gray-500">
             Fase {phase} de {totalPhases}
           </span>
-          <span className="text-xs text-gray-400">
-            {totalAnswered} {totalAnswered === 1 ? 'resposta' : 'respostas'}
+          {/*
+           * Number pop-in. The count has to be keyed so React replaces the
+           * node instead of reusing it — reuse means the text swaps silently
+           * and nothing animates.
+           */}
+          <span className="text-xs text-gray-400 relative inline-flex overflow-hidden">
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.span
+                key={totalAnswered}
+                initial={{ opacity: 0, y: DISTANCE.micro, filter: `blur(${BLUR.small}px)` }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -DISTANCE.micro, filter: `blur(${BLUR.small}px)` }}
+                transition={{ duration: DURATION.quick, ease: EASE_KEYWORD.inOut }}
+              >
+                {totalAnswered}
+              </motion.span>
+            </AnimatePresence>
+            <span>&nbsp;{totalAnswered === 1 ? 'resposta' : 'respostas'}</span>
           </span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
+            transition={{ duration: DURATION.slow, ease: EASE.smoothOut }}
             className="bg-blue-600 h-full rounded-full"
           />
         </div>

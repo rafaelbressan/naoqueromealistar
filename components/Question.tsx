@@ -22,7 +22,7 @@ import {
 import type { Question as QuestionType } from '@/types/quiz';
 import { AnswerButtons } from './AnswerButtons';
 import { SwipeCard } from './motion/SwipeCard';
-import { DURATION, EASE, DISTANCE, BLUR } from '@/lib/motion';
+import { DURATION, EASE, EASE_KEYWORD, DISTANCE, BLUR } from '@/lib/motion';
 
 interface QuestionProps {
   question: QuestionType;
@@ -105,7 +105,7 @@ export function QuestionFace({ question }: { question: QuestionType }) {
           key={question.categoria ?? question.id}
           initial={{ opacity: 0, filter: `blur(${BLUR.small}px)` }}
           animate={{ opacity: 1, filter: 'blur(0px)' }}
-          transition={{ duration: DURATION.fast, ease: EASE.smoothOut }}
+          transition={{ duration: DURATION.fast, ease: EASE_KEYWORD.inOut }}
           className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600"
         >
           {icon}

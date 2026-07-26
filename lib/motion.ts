@@ -20,11 +20,26 @@ export const DURATION = {
   verySlow: 0.5,
 } as const;
 
-/** Cubic-bezier control points. Keyword easings stay in CSS only. */
+/** Cubic-bezier control points. */
 export const EASE = {
   smoothOut: [0.22, 1, 0.36, 1],
   bounce: [0.34, 1.36, 0.64, 1],
   bounceStrong: [0.34, 3.85, 0.64, 1],
+} as const;
+
+/**
+ * Keyword easings, in Framer Motion's spelling. Separate from EASE because
+ * these are names rather than curves, so the parity test compares them against
+ * their CSS keyword rather than parsing control points.
+ *
+ * Usage split, per transitions.dev: smoothOut covers surfaces moving or
+ * resizing (modal, dropdown, panel, page slide); inOut covers content changing
+ * in place (icon swap, text swap, text reveal, number pop-in).
+ */
+export const EASE_KEYWORD = {
+  inOut: 'easeInOut',
+  out: 'easeOut',
+  linear: 'linear',
 } as const;
 
 /**

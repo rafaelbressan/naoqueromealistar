@@ -171,6 +171,28 @@
   }
 }
 
+/*
+ * Nudge a leading icon toward where the control is going. Applied to the back
+ * chevron; the disabled guard matters because a nav button that animates when
+ * it cannot act is lying about being available.
+ */
+.t-nudge-left > svg {
+  transition: transform var(--duration-quick) var(--ease-smooth-out);
+}
+
+@media (hover: hover) {
+  .t-nudge-left:hover:not(:disabled) > svg {
+    transform: translateX(calc(-1 * var(--distance-micro)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-nudge-left > svg,
+  .t-nudge-left:hover > svg {
+    transform: none;
+  }
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
