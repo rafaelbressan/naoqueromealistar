@@ -6,7 +6,7 @@ import { MotionProvider } from '@/components/motion/MotionProvider';
 import { SwipeCard } from '@/components/motion/SwipeCard';
 
 /**
- * The JS half of RISK 4.
+ * The JS half of the reduced-motion accommodation.
  *
  * The reduced-motion block in globals.css covers everything CSS drives, but
  * Framer Motion reads numbers out of lib/motion.ts and never sees a custom

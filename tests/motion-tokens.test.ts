@@ -220,10 +220,6 @@ describe('motion token parity: lib/motion.ts vs app/globals.css', () => {
     it('STACK.opacityStep matches --stack-opacity-step', () => {
       expectMatch('STACK.opacityStep', STACK.opacityStep, '--stack-opacity-step', parseFloat(tokens['--stack-opacity-step']));
     });
-
-    it('STACK.depth matches --stack-depth', () => {
-      expectMatch('STACK.depth', STACK.depth, '--stack-depth', parseFloat(tokens['--stack-depth']));
-    });
   });
 
   describe('swipe', () => {
@@ -237,6 +233,94 @@ describe('motion token parity: lib/motion.ts vs app/globals.css', () => {
 
     it('SWIPE.rotateMax matches --swipe-rotate-max', () => {
       expectMatch('SWIPE.rotateMax', SWIPE.rotateMax, '--swipe-rotate-max', num('--swipe-rotate-max', 'deg'));
+    });
+
+    it('SWIPE.exitX matches --swipe-exit-x', () => {
+      expectMatch('SWIPE.exitX', SWIPE.exitX, '--swipe-exit-x', num('--swipe-exit-x', 'vw'));
+    });
+  });
+
+  /*
+   * The parity cases above only prove that the tokens they list agree. They
+   * cannot prove the list is complete, and that gap was not theoretical:
+   * --swipe-exit-x sat in :root with no TS mirror while its value lived as the
+   * bare string '140vw' inside Question.tsx. Every parity test passed.
+   *
+   * So the suite also has to assert its own coverage. Add a token to :root
+   * without mirroring it and this fails by name.
+   */
+  describe('coverage', () => {
+    /*
+     * Scoped by prefix so the check stays about motion. :root also carries
+     * theme tokens (--background, --foreground) that have no business having a
+     * Framer Motion counterpart.
+     */
+    const MOTION_PREFIXES = [
+      '--duration-',
+      '--ease-',
+      '--distance-',
+      '--scale-',
+      '--blur-',
+      '--stack-',
+      '--swipe-',
+    ];
+
+    const MIRRORED = [
+      '--duration-stagger',
+      '--duration-micro',
+      '--duration-quick',
+      '--duration-fast',
+      '--duration-medium',
+      '--duration-slow',
+      '--duration-very-slow',
+      '--ease-smooth-out',
+      '--ease-bounce',
+      '--ease-bounce-strong',
+      '--ease-in-out',
+      '--ease-out',
+      '--ease-linear',
+      '--distance-micro',
+      '--distance-small',
+      '--distance-base',
+      '--distance-medium',
+      '--distance-large',
+      '--scale-large',
+      '--scale-medium',
+      '--scale-small',
+      '--scale-tiny',
+      '--blur-small',
+      '--blur-medium',
+      '--blur-large',
+      '--stack-perspective',
+      '--stack-z-step',
+      '--stack-y-step',
+      '--stack-rotate-step',
+      '--stack-opacity-step',
+      '--swipe-commit-x',
+      '--swipe-commit-v',
+      '--swipe-rotate-max',
+      '--swipe-exit-x',
+    ];
+
+    it('every :root motion token has a TS mirror asserted above', () => {
+      const unmirrored = Object.keys(tokens)
+        .filter((name) => MOTION_PREFIXES.some((prefix) => name.startsWith(prefix)))
+        .filter((name) => !MIRRORED.includes(name));
+      expect(
+        unmirrored,
+        `These tokens exist in app/globals.css :root but nothing in lib/motion.ts ` +
+          `mirrors them, so drift in their value is invisible: ${unmirrored.join(', ')}. ` +
+          `Add the constant, add a parity case, and list the token in MIRRORED.`
+      ).toEqual([]);
+    });
+
+    it('every token listed as mirrored actually exists in :root', () => {
+      const missing = MIRRORED.filter((name) => !(name in tokens));
+      expect(
+        missing,
+        `MIRRORED claims these tokens exist in app/globals.css :root but they do not: ` +
+          `${missing.join(', ')}. Remove them from the list along with their parity case.`
+      ).toEqual([]);
     });
   });
 });
@@ -272,7 +356,7 @@ const reducedTokens = parseReducedMotionTokens(readFileSync(CSS_PATH, 'utf-8'));
 
 describe('reduced motion coverage', () => {
   /*
-   * Reduced motion strips decoration, never function — see RISK 4. What is
+   * Reduced motion strips decoration, never function. What is
    * asserted here is that nothing new can be added to the scale and quietly
    * skip the guard: every duration declared in :root has to be answered in
    * the reduce block, or someone's next token animates at full speed for a

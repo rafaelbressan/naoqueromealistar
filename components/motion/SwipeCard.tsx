@@ -99,18 +99,31 @@ export function SwipeCard({
     >
       {children}
 
-      {/* Drag readout. Decorative — the buttons carry the accessible name. */}
+      {/*
+       * Drag readout. Decorative — the buttons carry the accessible name.
+       *
+       * Tilt comes from the same rotateMax the card uses, so retuning the
+       * swipe cannot leave the badges pointing the old way, and a
+       * reduced-motion user gets flat badges on a flat card rather than one of
+       * each.
+       *
+       * green-600/red-600 rather than -500: green-500 on white is 2.28:1,
+       * under even the 3:1 large-text floor, so the SIM side of the readout
+       * was near-invisible to a low-vision user while NÃO was legible. They
+       * also match the answer buttons now, so gesture and button speak the
+       * same colour.
+       */}
       <motion.div
         aria-hidden
-        style={{ opacity: rightOpacity }}
-        className="pointer-events-none absolute top-8 left-6 rotate-[-12deg] rounded-lg border-4 border-green-500 px-4 py-2 text-2xl font-extrabold tracking-wider text-green-500"
+        style={{ opacity: rightOpacity, rotate: -rotateMax }}
+        className="pointer-events-none absolute top-8 left-6 rounded-lg border-4 border-green-600 px-4 py-2 text-2xl font-extrabold tracking-wider text-green-600"
       >
         {rightLabel}
       </motion.div>
       <motion.div
         aria-hidden
-        style={{ opacity: leftOpacity }}
-        className="pointer-events-none absolute top-8 right-6 rotate-[12deg] rounded-lg border-4 border-red-500 px-4 py-2 text-2xl font-extrabold tracking-wider text-red-500"
+        style={{ opacity: leftOpacity, rotate: rotateMax }}
+        className="pointer-events-none absolute top-8 right-6 rounded-lg border-4 border-red-600 px-4 py-2 text-2xl font-extrabold tracking-wider text-red-600"
       >
         {leftLabel}
       </motion.div>

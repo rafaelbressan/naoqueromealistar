@@ -69,7 +69,6 @@
   --stack-y-step: -12px;
   --stack-rotate-step: 2deg;
   --stack-opacity-step: 0.2;
-  --stack-depth: 2;
 
   /* Swipe */
   --swipe-commit-x: 110px;
@@ -121,11 +120,33 @@
 
 .t-btn,
 .t-btn-icon {
+  /*
+   * The 44px floor lives here, not at the call sites. It used to be an inline
+   * `style={{ minWidth: 44, minHeight: 44 }}` repeated at every button; any
+   * caller that forgot it shipped a sub-44px tap target with nothing to catch
+   * it. Owning the constraint in the class means you cannot opt out by
+   * forgetting.
+   */
+  min-height: 44px;
+  min-width: 44px;
   transition:
     background-color var(--duration-quick) var(--ease-smooth-out),
     color var(--duration-quick) var(--ease-smooth-out),
     transform var(--duration-quick) var(--ease-smooth-out),
     box-shadow var(--duration-quick) var(--ease-smooth-out);
+}
+
+/*
+ * will-change is scoped to the interaction, not declared permanently.
+ * Unscoped, it hands every button in the app its own compositor layer for the
+ * lifetime of the page — on the mid-range Android this quiz targets, GPU layer
+ * memory is the scarce resource, and the browser already promotes an element
+ * for the duration of a transform transition without being asked.
+ */
+.t-btn:hover,
+.t-btn:active,
+.t-btn-icon:hover,
+.t-btn-icon:active {
   will-change: transform;
 }
 
@@ -155,10 +176,21 @@
   transform: none;
 }
 
+/*
+ * The ring cannot come from currentColor. Every .t-btn call site is a solid
+ * fill with text-white, so currentColor resolves to white, and outline-offset
+ * pushes the ring off the button onto the white card or dock behind it —
+ * white on white. That left the entire non-gesture answer path with no visible
+ * focus at all.
+ *
+ * A fixed dark ring plus a light halo reads on both the coloured fill and
+ * whatever sits behind it.
+ */
 .t-btn:focus-visible,
 .t-btn-icon:focus-visible {
-  outline: 2px solid currentColor;
+  outline: 2px solid #1e293b;
   outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -190,6 +222,36 @@
   .t-nudge-left > svg,
   .t-nudge-left:hover > svg {
     transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Staggered line reveal — the landing page's entrance.
+ *
+ * CSS rather than Framer Motion so the landing can stay a server component.
+ * The h1 is the LCP candidate; making its visibility depend on a JS bundle
+ * arriving is the single most expensive thing this page could do.
+ *
+ * `backwards` fill is what makes the stagger safe: the hidden state applies
+ * only during the delay, and the resting state is the element's natural one.
+ * If animations never run — reduced motion, an old engine, CSS that failed to
+ * load — the text is simply visible. Content is never gated on the animation.
+ * ------------------------------------------------------------------------- */
+
+@keyframes reveal-line {
+  from {
+    opacity: 0;
+    transform: translateY(var(--distance-medium));
+  }
+}
+
+.reveal-line {
+  animation: reveal-line var(--duration-fast) var(--ease-in-out) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-line {
+    animation: none;
   }
 }
 

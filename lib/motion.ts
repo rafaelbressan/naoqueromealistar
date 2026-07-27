@@ -43,13 +43,11 @@ export const EASE_KEYWORD = {
 } as const;
 
 /**
- * `stack` comes verbatim from amicro's CardTimeMachine. `swipe` is a touch
- * looser so a flicked card clears the screen without fighting the spring;
- * `settle` is stiffer because a snap-back that lingers reads as a bug.
+ * `stack` comes verbatim from amicro's CardTimeMachine. `settle` is stiffer
+ * because a snap-back that lingers reads as a bug.
  */
 export const SPRING = {
   stack: { type: 'spring', stiffness: 250, damping: 25, mass: 0.8 },
-  swipe: { type: 'spring', stiffness: 300, damping: 30, mass: 0.7 },
   settle: { type: 'spring', stiffness: 400, damping: 35 },
 } as const;
 
@@ -83,7 +81,6 @@ export const STACK = {
   yStep: -12,
   rotateStep: 2,
   opacityStep: 0.2,
-  depth: 2,
 } as const;
 
 export const SWIPE = {
@@ -92,4 +89,10 @@ export const SWIPE = {
   /** Or flick faster than this many px/s — a short fast flick must work. */
   commitV: 500,
   rotateMax: 12,
+  /**
+   * Viewport widths a committed card travels before it is unmounted. Far
+   * enough that the card is gone, not so far that the easing spends its last
+   * frames animating something nobody can see.
+   */
+  exitX: 140,
 } as const;

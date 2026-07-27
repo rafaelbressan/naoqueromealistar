@@ -34,7 +34,17 @@ export default function QuizPage() {
    */
   const [exitDirection, setExitDirection] = useState<ExitDirection>('neutral');
 
-  /** -1..1 while the card is being dragged. Picks which lookahead to show. */
+  /**
+   * Which lookahead to show: -1 dragging left, 1 right, 0 not dragging.
+   *
+   * Deliberately the sign and not the -1..1 magnitude. SwipeCard reports
+   * progress on every pointermove, so storing the raw value re-rendered this
+   * whole subtree — navbar, progress bar (which re-runs its phase regexes),
+   * the stack, the lookahead face and the dock — around sixty times a second
+   * for a value whose only two readers are `!== 0` and `> 0`. Quantising to
+   * three states lets React bail out on the identical value, so a drag costs
+   * at most two renders instead of one per frame.
+   */
   const [dragProgress, setDragProgress] = useState(0);
 
   const { phaseName } = getPhaseInfo(currentQuestionId);
@@ -55,7 +65,9 @@ export default function QuizPage() {
   };
 
   // Resolve the card behind the current one from the direction of the drag.
-  // Blur keeps it readable as shape but not as content — see RISK 3.
+  // Blur keeps it readable as shape but not as content: the preview must show
+  // that something is coming without spoiling what, and a terminating branch
+  // must never leak its result before the answer commits.
   const lookahead =
     currentQuestion && dragProgress !== 0
       ? peek(currentQuestion.id, dragProgress > 0 ? 'sim' : 'nao')
@@ -114,7 +126,7 @@ export default function QuizPage() {
                 question={currentQuestion}
                 enterFrom={lastDirection === 'back' ? 'left' : 'right'}
                 onAnswer={(answerKey) => answer(currentQuestion.id, answerKey)}
-                onDragProgress={setDragProgress}
+                onDragProgress={(progress) => setDragProgress(Math.sign(progress))}
               />
             ) : (
               <div key="loading" className="text-center p-8">

@@ -19,8 +19,9 @@ import { MotionConfig } from 'framer-motion';
  * they just stop flying, spinning and tilting to get there.
  *
  * What deliberately survives is the swipe gesture itself. Dragging is a way of
- * answering, not decoration — see RISK 4. SwipeCard drops its rotation via
- * useReducedMotion and keeps responding to the drag.
+ * answering, not decoration: taking it away would remove a way of answering
+ * from the people who already have the fewest. SwipeCard drops its rotation
+ * via useReducedMotion and keeps responding to the drag.
  */
 export function MotionProvider({ children }: { children: React.ReactNode }) {
   return <MotionConfig reducedMotion="user">{children}</MotionConfig>;

@@ -22,7 +22,7 @@ import {
 import type { Question as QuestionType } from '@/types/quiz';
 import { AnswerButtons } from './AnswerButtons';
 import { SwipeCard } from './motion/SwipeCard';
-import { DURATION, EASE, EASE_KEYWORD, DISTANCE, BLUR } from '@/lib/motion';
+import { DURATION, EASE, EASE_KEYWORD, DISTANCE, BLUR, SWIPE } from '@/lib/motion';
 
 interface QuestionProps {
   question: QuestionType;
@@ -147,7 +147,12 @@ const cardVariants = {
   },
   exit: (direction: 'left' | 'right' | 'neutral') => ({
     opacity: 0,
-    x: direction === 'right' ? '140vw' : direction === 'left' ? '-140vw' : 0,
+    x:
+      direction === 'right'
+        ? `${SWIPE.exitX}vw`
+        : direction === 'left'
+          ? `-${SWIPE.exitX}vw`
+          : 0,
     filter: `blur(${BLUR.medium}px)`,
     transition: { duration: DURATION.fast, ease: EASE.smoothOut },
   }),
@@ -159,6 +164,11 @@ export function Question({
   enterFrom = 'right',
   onDragProgress,
 }: QuestionProps) {
+  // Only yes/no gets the fixed mobile dock — see AnswerDock for why. Everything
+  // else keeps its buttons in the card on mobile too, so the layout below has
+  // to know which case it is in.
+  const isDocked = question.tipo === 'sim_nao';
+
   return (
     <motion.div
       custom={enterFrom}
@@ -166,12 +176,20 @@ export function Question({
       initial="enter"
       animate="center"
       exit="exit"
-      className="w-full max-w-2xl mx-auto"
+      /*
+       * `relative z-[100]` keeps the live card above the lookahead. CardStack
+       * sets perspective but leaves transform-style flat, so depth does not
+       * decide paint order — z-index does, and the lookahead is an absolutely
+       * positioned card at z-index 99. Without a layer of its own, this card is
+       * an unpositioned block and paints underneath: the blurred preview would
+       * cover the question being answered from the first pixel of the drag.
+       */
+      className="relative z-[100] w-full max-w-2xl mx-auto"
     >
-      {/* Bottom padding leaves room for the dock, which the page renders. */}
-      <div className="p-4 md:p-6 pb-28 md:pb-6">
+      {/* Bottom padding leaves room for the dock, when the page renders one. */}
+      <div className={`p-4 md:p-6 md:pb-6 ${isDocked ? 'pb-28' : 'pb-6'}`}>
         <SwipeCard
-          enabled={question.tipo === 'sim_nao'}
+          enabled={isDocked}
           leftLabel="NÃO"
           rightLabel="SIM"
           onCommit={(direction) => onAnswer(direction === 'right' ? 'sim' : 'nao')}
@@ -180,8 +198,8 @@ export function Question({
           <QuestionFace question={question} />
         </SwipeCard>
 
-        {/* Answer buttons - desktop only. Mobile gets the fixed dock instead. */}
-        <div className="hidden md:block pt-6">
+        {/* Docked types show these on desktop only; the rest show them always. */}
+        <div className={isDocked ? 'hidden md:block pt-6' : 'pt-6'}>
           <AnswerButtons question={question} onAnswer={onAnswer} />
         </div>
       </div>
