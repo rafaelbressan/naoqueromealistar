@@ -48,11 +48,27 @@ export function SwipeCard({
   const committed = useRef(false);
 
   const rotateMax = prefersReducedMotion ? 0 : SWIPE.rotateMax;
-  const rotate = useTransform(x, [-200, 0, 200], [-rotateMax, 0, rotateMax]);
 
-  // Labels reach full strength at the commit threshold, so their opacity
-  // doubles as a readout of how close the answer is to landing. This is what
-  // teaches the gesture without a tutorial.
+  /*
+   * Tilt and labels are both mapped over the commit threshold, so the card
+   * reaches full tilt and the label full opacity at exactly the point the
+   * answer would land.
+   *
+   * The tilt used to run over a hardcoded ±200px instead, which had nothing to
+   * do with when the gesture actually committed. Combined with the elastic
+   * damping below, the card was tilted about four degrees at the moment it
+   * answered — the readout said "barely started" while the gesture said
+   * "done".
+   */
+  const rotate = useTransform(
+    x,
+    [-SWIPE.commitX, 0, SWIPE.commitX],
+    [-rotateMax, 0, rotateMax]
+  );
+
+  // Full strength at the threshold, so opacity doubles as a readout of how
+  // close the answer is to landing. This is what teaches the gesture without a
+  // tutorial — but only while it tells the truth.
   const rightOpacity = useTransform(x, [0, SWIPE.commitX], [0, 1]);
   const leftOpacity = useTransform(x, [-SWIPE.commitX, 0], [1, 0]);
 
@@ -82,7 +98,18 @@ export function SwipeCard({
     <motion.div
       drag="x"
       dragDirectionLock
-      dragElastic={0.6}
+      /*
+       * dragElastic 1, not 0.6. Every pixel of this drag is "beyond the
+       * constraints", so 0.6 meant the card tracked the finger at 60% while
+       * shouldCommit measured the finger itself — the answer landed when the
+       * card had moved only three fifths of the way and looked nowhere near
+       * committing. At 1 the card is where the finger is, so the threshold,
+       * the tilt and the label all describe the same moment.
+       *
+       * The constraints stay at zero: they are what springs the card home when
+       * the drag does not commit.
+       */
+      dragElastic={1}
       dragConstraints={{ left: 0, right: 0 }}
       onDrag={handleDrag}
       onDragEnd={handleDragEnd}

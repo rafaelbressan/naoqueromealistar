@@ -84,10 +84,27 @@ export const STACK = {
 } as const;
 
 export const SWIPE = {
-  /** Drag past this many px and the answer commits. */
-  commitX: 110,
-  /** Or flick faster than this many px/s — a short fast flick must work. */
-  commitV: 500,
+  /**
+   * Drag past this many px and the answer commits.
+   *
+   * Also the range the tilt and the SIM/NÃO labels are mapped over, so the
+   * card sits at exactly rotateMax and the label at exactly full opacity at
+   * the moment it would commit. Tying all three to one number is what makes
+   * the readout honest: reaching the threshold looks like reaching the
+   * threshold.
+   */
+  commitX: 160,
+  /**
+   * Or flick faster than this many px/s. Paired with minFlickX, never alone —
+   * see shouldCommit.
+   */
+  commitV: 900,
+  /**
+   * Floor for the velocity path. A flick has to actually travel this far
+   * before speed counts, so a fast twitch on a card the user was only
+   * steadying cannot answer a question.
+   */
+  minFlickX: 56,
   rotateMax: 12,
   /**
    * Viewport widths a committed card travels before it is unmounted. Far

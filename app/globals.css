@@ -71,8 +71,9 @@
   --stack-opacity-step: 0.2;
 
   /* Swipe */
-  --swipe-commit-x: 110px;
-  --swipe-commit-v: 500;
+  --swipe-commit-x: 160px;
+  --swipe-commit-v: 900;
+  --swipe-min-flick-x: 56px;
   --swipe-rotate-max: 12deg;
   --swipe-exit-x: 140vw;
 }

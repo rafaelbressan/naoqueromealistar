@@ -231,6 +231,10 @@ describe('motion token parity: lib/motion.ts vs app/globals.css', () => {
       expectMatch('SWIPE.commitV', SWIPE.commitV, '--swipe-commit-v', parseFloat(tokens['--swipe-commit-v']));
     });
 
+    it('SWIPE.minFlickX matches --swipe-min-flick-x', () => {
+      expectMatch('SWIPE.minFlickX', SWIPE.minFlickX, '--swipe-min-flick-x', num('--swipe-min-flick-x', 'px'));
+    });
+
     it('SWIPE.rotateMax matches --swipe-rotate-max', () => {
       expectMatch('SWIPE.rotateMax', SWIPE.rotateMax, '--swipe-rotate-max', num('--swipe-rotate-max', 'deg'));
     });
@@ -298,6 +302,7 @@ describe('motion token parity: lib/motion.ts vs app/globals.css', () => {
       '--stack-opacity-step',
       '--swipe-commit-x',
       '--swipe-commit-v',
+      '--swipe-min-flick-x',
       '--swipe-rotate-max',
       '--swipe-exit-x',
     ];
