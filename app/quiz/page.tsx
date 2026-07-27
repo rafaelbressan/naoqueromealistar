@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useQuizState } from '@/hooks/useQuizState';
 import { Question, QuestionFace } from '@/components/Question';
-import { AnswerDock } from '@/components/AnswerDock';
 import { Result } from '@/components/Result';
 import { Navbar } from '@/components/Navbar';
 import { ProgressBar, getPhaseInfo } from '@/components/ProgressBar';
@@ -75,13 +74,24 @@ export default function QuizPage() {
 
   return (
     /*
+     * A fixed-height flex column, not a scrolling page.
+     *
+     * The card has to fill whatever is left after the navbar and progress bar,
+     * and it has to be the same height on every question — letting each card
+     * size itself to its own text made the stack behind show through unevenly.
+     * Measuring the chrome in CSS would mean hardcoding a number that breaks
+     * the moment the navbar changes; giving the card area `flex-1` lets the
+     * browser do the arithmetic.
+     *
+     * dvh rather than vh because mobile browser chrome expands and collapses
+     * on scroll, and vh is frozen at the taller measurement — the footer with
+     * the answer buttons would sit below the fold exactly when it matters.
+     *
      * overflow-x: clip, not hidden. A dragged card — and the exit that throws
      * it to 140vw — widens the document and lets the user scroll sideways into
-     * empty space. `clip` stops that without creating a scroll container, so
-     * the sticky navbar keeps sticking; `hidden` would make this element the
-     * scrollport and break it.
+     * empty space. `clip` stops that without creating a scroll container.
      */
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white [overflow-x:clip]">
+    <div className="flex h-dvh flex-col bg-gradient-to-b from-blue-50 to-white [overflow-x:clip]">
       {!result && currentQuestionId && (
         <>
           <Navbar title={phaseName} canGoBack={canGoBack} onBack={back} />
@@ -92,28 +102,40 @@ export default function QuizPage() {
         </>
       )}
 
-      <div className="py-4 md:py-8">
-        {/*
-         * CardStack supplies the perspective. Nothing with `position: fixed`
-         * may live inside it — perspective makes it the containing block. The
-         * dock is mounted below, outside, for exactly that reason.
-         */}
-        <CardStack>
-          {/* The lookahead sits behind and never receives interaction. */}
+      {/*
+       * min-h-0 lets this shrink below its content so the card scrolls
+       * internally instead of pushing the layout taller than the viewport.
+       *
+       * CardStack supplies the perspective, which makes it the containing
+       * block for any `position: fixed` descendant. Nothing inside may use
+       * fixed positioning — that is what sent the answer dock sliding along
+       * with the card the first time. The controls now live inside the card
+       * and travel with it by design, so there is no fixed element left to
+       * misplace; tests/dock-containing-block.test.tsx keeps it that way.
+       */}
+      <div className="min-h-0 flex-1 px-4 py-4 md:py-6">
+        <CardStack className="h-full">
+          {/*
+           * The lookahead sits behind and never receives interaction. It has
+           * to be exactly the size of the card in front — a preview an inch
+           * shorter reads as a rendering fault, not as depth.
+           *
+           * A terminating branch renders an empty card rather than the result:
+           * the preview must say that something is coming without saying what,
+           * or the blur becomes a spoiler for the answer being decided.
+           */}
           {lookahead && (
             <CardStack.Card
               offset={1}
               blurred
               reveal={0}
-              className="w-full max-w-2xl mx-auto"
+              className="mx-auto w-full max-w-2xl"
             >
-              <div className="p-4 md:p-6">
-                {lookahead.kind === 'question' ? (
-                  <QuestionFace question={lookahead.question} />
-                ) : (
-                  <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 min-h-[8rem]" />
-                )}
-              </div>
+              {lookahead.kind === 'question' ? (
+                <QuestionFace question={lookahead.question} />
+              ) : (
+                <div className="h-full rounded-2xl bg-white shadow-lg" />
+              )}
             </CardStack.Card>
           )}
 
@@ -136,17 +158,6 @@ export default function QuizPage() {
           </AnimatePresence>
         </CardStack>
       </div>
-
-      {/*
-       * Outside CardStack on purpose. See AnswerDock's comment and
-       * tests/dock-containing-block.test.tsx.
-       */}
-      {!result && currentQuestion && (
-        <AnswerDock
-          question={currentQuestion}
-          onAnswer={(answerKey) => answer(currentQuestion.id, answerKey)}
-        />
-      )}
     </div>
   );
 }

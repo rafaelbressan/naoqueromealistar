@@ -83,7 +83,14 @@ export function Result({ result, onRestart }: ResultProps) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: SCALE.large }}
       transition={{ duration: DURATION.verySlow, ease: EASE.smoothOut }}
-      className="w-full max-w-2xl mx-auto p-6"
+      /*
+       * The result is the one card allowed to be taller than the screen: it
+       * carries the reason, the legal citation and the next steps, and
+       * truncating any of that to fit a fixed height would be the wrong
+       * tradeoff. h-full plus overflow-y-auto keeps it inside the viewport
+       * flex column while letting the content scroll.
+       */
+      className="mx-auto h-full w-full max-w-2xl overflow-y-auto"
     >
       <motion.div
         variants={listVariants}

@@ -14,7 +14,7 @@ import { Result } from '../components/Result';
  *
  * Motion behaviour is covered where it can be tested honestly:
  * tests/swipe.test.ts for the commit rule, tests/motion-tokens.test.ts for the
- * scale, tests/dock-containing-block.test.tsx against the real library.
+ * scale, tests/containing-block.test.tsx against the real library.
  */
 vi.mock('framer-motion', () => {
   const MOTION_PROPS = new Set([
@@ -113,25 +113,30 @@ describe('Question Component', () => {
       expect(screen.getByText('Nasceu mulher e se identifica como mulher')).toBeInTheDocument();
     });
 
-    it('renders Sim and Não buttons', () => {
+    /*
+     * getByText, not getAllByText[0]. The buttons used to render twice — once
+     * in the card for desktop, once in the fixed mobile dock — and the indirect
+     * lookup existed only to tolerate that. There is one set now, inside the
+     * card, so the singular query is the assertion: an accidental duplicate
+     * fails here instead of being silently indexed past.
+     */
+    it('renders exactly one Sim and one Não button', () => {
       render(<Question question={simNaoQuestion} onAnswer={vi.fn()} />);
-      // Buttons render twice (desktop + mobile), use getAllByText
-      expect(screen.getAllByText('Sim').length).toBeGreaterThan(0);
-      expect(screen.getAllByText('Não').length).toBeGreaterThan(0);
+      expect(screen.getByText('Sim')).toBeInTheDocument();
+      expect(screen.getByText('Não')).toBeInTheDocument();
     });
 
     it('calls onAnswer with "sim" when Sim is clicked', () => {
       const onAnswer = vi.fn();
       render(<Question question={simNaoQuestion} onAnswer={onAnswer} />);
-      // Click the first Sim button found
-      fireEvent.click(screen.getAllByText('Sim')[0]);
+      fireEvent.click(screen.getByText('Sim'));
       expect(onAnswer).toHaveBeenCalledWith('sim');
     });
 
     it('calls onAnswer with "nao" when Não is clicked', () => {
       const onAnswer = vi.fn();
       render(<Question question={simNaoQuestion} onAnswer={onAnswer} />);
-      fireEvent.click(screen.getAllByText('Não')[0]);
+      fireEvent.click(screen.getByText('Não'));
       expect(onAnswer).toHaveBeenCalledWith('nao');
     });
   });
@@ -140,15 +145,15 @@ describe('Question Component', () => {
     it('renders all option buttons with labels', () => {
       render(<Question question={selecaoQuestion} onAnswer={vi.fn()} />);
       // Should show labels, not keys
-      expect(screen.getAllByText('Opção A').length).toBeGreaterThan(0);
-      expect(screen.getAllByText('Opção B').length).toBeGreaterThan(0);
-      expect(screen.getAllByText('Nenhuma').length).toBeGreaterThan(0);
+      expect(screen.getByText('Opção A')).toBeInTheDocument();
+      expect(screen.getByText('Opção B')).toBeInTheDocument();
+      expect(screen.getByText('Nenhuma')).toBeInTheDocument();
     });
 
     it('calls onAnswer with selected key', () => {
       const onAnswer = vi.fn();
       render(<Question question={selecaoQuestion} onAnswer={onAnswer} />);
-      fireEvent.click(screen.getAllByText('Opção A')[0]);
+      fireEvent.click(screen.getByText('Opção A'));
       expect(onAnswer).toHaveBeenCalledWith('A');
     });
   });
@@ -156,13 +161,13 @@ describe('Question Component', () => {
   describe('informativo type', () => {
     it('renders Continuar button', () => {
       render(<Question question={informativoQuestion} onAnswer={vi.fn()} />);
-      expect(screen.getAllByText('Continuar').length).toBeGreaterThan(0);
+      expect(screen.getByText('Continuar')).toBeInTheDocument();
     });
 
     it('calls onAnswer with first key on Continuar', () => {
       const onAnswer = vi.fn();
       render(<Question question={informativoQuestion} onAnswer={onAnswer} />);
-      fireEvent.click(screen.getAllByText('Continuar')[0]);
+      fireEvent.click(screen.getByText('Continuar'));
       expect(onAnswer).toHaveBeenCalledWith('continuar');
     });
   });

@@ -87,15 +87,39 @@ const getCategoryIcon = (questionId: string, categoria?: string) => {
 };
 
 /**
- * The card face. Also used to render the lookahead card behind the current
- * one, which is why it takes no handlers.
+ * The card face — a full-height surface, not a box that hugs its content.
+ *
+ * Every card is the same size on purpose. When each one sized itself to its
+ * own text, the stack behind showed through unevenly and the blurred preview
+ * read as a glitch rather than as depth; the drag surface also shrank to
+ * whatever the question happened to be, so a one-line question left most of
+ * the screen dead to the gesture.
+ *
+ * Three regions: a header that never moves, a body that scrolls when the
+ * content is taller than the space, and a footer for the actions. The footer
+ * is what makes the buttons travel with the card during a swipe — they used to
+ * live in a fixed dock outside the animated subtree, which meant the card flew
+ * away and left its own controls behind.
+ *
+ * Also used for the lookahead card behind the current one, which is why the
+ * handlers arrive as rendered nodes rather than callbacks.
  */
-export function QuestionFace({ question }: { question: QuestionType }) {
+export function QuestionFace({
+  question,
+  body,
+  footer,
+}: {
+  question: QuestionType;
+  /** Extra content inside the scrolling region, below the explanation. */
+  body?: React.ReactNode;
+  /** Pinned to the bottom of the card, always visible. */
+  footer?: React.ReactNode;
+}) {
   const icon = getCategoryIcon(question.id, question.categoria);
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
-      <div className="flex items-start gap-4">
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-lg">
+      <div className="flex flex-shrink-0 items-start gap-4 p-5 pb-4 md:p-8 md:pb-5">
         {/*
          * Icon swap: the icon cross-fades through blur when the category
          * changes, rather than cutting. Keyed on the icon identity so it only
@@ -106,21 +130,34 @@ export function QuestionFace({ question }: { question: QuestionType }) {
           initial={{ opacity: 0, filter: `blur(${BLUR.small}px)` }}
           animate={{ opacity: 1, filter: 'blur(0px)' }}
           transition={{ duration: DURATION.fast, ease: EASE_KEYWORD.inOut }}
-          className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600"
+          className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600"
         >
           {icon}
         </motion.div>
-        <div className="flex-1 space-y-3">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-            {question.pergunta}
-          </h2>
-          {question.explicacao && (
-            <p className="text-gray-600 text-base whitespace-pre-line">
-              {question.explicacao}
-            </p>
-          )}
-        </div>
+        <h2 className="flex-1 text-xl font-bold text-gray-900 md:text-2xl">
+          {question.pergunta}
+        </h2>
       </div>
+
+      {/*
+       * min-h-0 is load-bearing. A flex child defaults to min-height:auto,
+       * which refuses to shrink below its content — the region would grow past
+       * the card and push the footer off screen instead of scrolling.
+       */}
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 pb-4 md:px-8">
+        {question.explicacao && (
+          <p className="whitespace-pre-line text-base text-gray-600">
+            {question.explicacao}
+          </p>
+        )}
+        {body}
+      </div>
+
+      {footer && (
+        <div className="flex-shrink-0 border-t border-gray-100 p-5 md:p-8 md:pt-5">
+          {footer}
+        </div>
+      )}
     </div>
   );
 }
@@ -164,10 +201,21 @@ export function Question({
   enterFrom = 'right',
   onDragProgress,
 }: QuestionProps) {
-  // Only yes/no gets the fixed mobile dock — see AnswerDock for why. Everything
-  // else keeps its buttons in the card on mobile too, so the layout below has
-  // to know which case it is in.
-  const isDocked = question.tipo === 'sim_nao';
+  const canSwipe = question.tipo === 'sim_nao';
+
+  /*
+   * Where the controls sit depends only on how many there are.
+   *
+   * Two buttons (sim/não) or one ("Continuar") pin to the footer, always
+   * visible — that is the Tinder shape, and for a swipeable question the
+   * buttons and the gesture need to be reachable at the same moment.
+   *
+   * A `selecao_unica` can carry eight options (P8_1). Pinned, they would eat
+   * the whole card and leave the question itself with nothing, so those ride
+   * in the scrolling body instead.
+   */
+  const controls = <AnswerButtons question={question} onAnswer={onAnswer} />;
+  const inFooter = question.tipo !== 'selecao_unica';
 
   return (
     <motion.div
@@ -184,25 +232,21 @@ export function Question({
        * an unpositioned block and paints underneath: the blurred preview would
        * cover the question being answered from the first pixel of the drag.
        */
-      className="relative z-[100] w-full max-w-2xl mx-auto"
+      className="relative z-[100] mx-auto h-full w-full max-w-2xl"
     >
-      {/* Bottom padding leaves room for the dock, when the page renders one. */}
-      <div className={`p-4 md:p-6 md:pb-6 ${isDocked ? 'pb-28' : 'pb-6'}`}>
-        <SwipeCard
-          enabled={isDocked}
-          leftLabel="NÃO"
-          rightLabel="SIM"
-          onCommit={(direction) => onAnswer(direction === 'right' ? 'sim' : 'nao')}
-          onDragProgress={onDragProgress}
-        >
-          <QuestionFace question={question} />
-        </SwipeCard>
-
-        {/* Docked types show these on desktop only; the rest show them always. */}
-        <div className={isDocked ? 'hidden md:block pt-6' : 'pt-6'}>
-          <AnswerButtons question={question} onAnswer={onAnswer} />
-        </div>
-      </div>
+      <SwipeCard
+        enabled={canSwipe}
+        leftLabel="NÃO"
+        rightLabel="SIM"
+        onCommit={(direction) => onAnswer(direction === 'right' ? 'sim' : 'nao')}
+        onDragProgress={onDragProgress}
+      >
+        <QuestionFace
+          question={question}
+          body={inFooter ? undefined : controls}
+          footer={inFooter ? controls : undefined}
+        />
+      </SwipeCard>
     </motion.div>
   );
 }

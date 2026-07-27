@@ -59,7 +59,11 @@ export function CardStackCard({
 
   return (
     <motion.div
-      className={`${isBehind ? 'absolute inset-x-0 top-0' : 'relative'} ${className}`}
+      // `inset-0`, not `inset-x-0 top-0`: cards are a fixed height now, so a
+      // card behind has to match the front one exactly. Left to size itself
+      // from its own content it came out shorter or taller, and the blurred
+      // edge peeking out from behind was the tell.
+      className={`${isBehind ? 'absolute inset-0' : 'relative h-full'} ${className}`}
       initial={false}
       animate={{
         z: offset * STACK.zStep,

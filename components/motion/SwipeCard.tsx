@@ -95,7 +95,10 @@ export function SwipeCard({
       }}
       whileDrag={{ cursor: 'grabbing' }}
       transition={SPRING.settle}
-      className="relative"
+      // h-full so the whole card is the drag surface. Sized to its content,
+      // the grabbable area was only as tall as the text, so a short question
+      // left most of the card dead to the gesture.
+      className="relative h-full"
     >
       {children}
 
@@ -116,14 +119,14 @@ export function SwipeCard({
       <motion.div
         aria-hidden
         style={{ opacity: rightOpacity, rotate: -rotateMax }}
-        className="pointer-events-none absolute top-8 left-6 rounded-lg border-4 border-green-600 px-4 py-2 text-2xl font-extrabold tracking-wider text-green-600"
+        className="pointer-events-none absolute top-28 left-6 rounded-lg border-4 border-green-600 bg-white/80 px-4 py-2 text-2xl font-extrabold tracking-wider text-green-600"
       >
         {rightLabel}
       </motion.div>
       <motion.div
         aria-hidden
         style={{ opacity: leftOpacity, rotate: rotateMax }}
-        className="pointer-events-none absolute top-8 right-6 rounded-lg border-4 border-red-600 px-4 py-2 text-2xl font-extrabold tracking-wider text-red-600"
+        className="pointer-events-none absolute top-28 right-6 rounded-lg border-4 border-red-600 bg-white/80 px-4 py-2 text-2xl font-extrabold tracking-wider text-red-600"
       >
         {leftLabel}
       </motion.div>
