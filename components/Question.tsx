@@ -20,10 +20,17 @@ import {
   Info,
 } from 'lucide-react';
 import type { Question as QuestionType } from '@/types/quiz';
+import { AnswerButtons } from './AnswerButtons';
+import { SwipeCard } from './motion/SwipeCard';
+import { DURATION, EASE, EASE_KEYWORD, DISTANCE, BLUR, SWIPE } from '@/lib/motion';
 
 interface QuestionProps {
   question: QuestionType;
   onAnswer: (answerKey: string) => void;
+  /** Which side the card slides in from. Going back must not look like going forward. */
+  enterFrom?: 'left' | 'right';
+  /** Reports drag position (-1..1) so the page can pick which lookahead to show. */
+  onDragProgress?: (progress: number) => void;
 }
 
 // Map categories to icons
@@ -79,110 +86,167 @@ const getCategoryIcon = (questionId: string, categoria?: string) => {
   return <HelpCircle className="w-6 h-6" />;
 };
 
-export function Question({ question, onAnswer }: QuestionProps) {
+/**
+ * The card face — a full-height surface, not a box that hugs its content.
+ *
+ * Every card is the same size on purpose. When each one sized itself to its
+ * own text, the stack behind showed through unevenly and the blurred preview
+ * read as a glitch rather than as depth; the drag surface also shrank to
+ * whatever the question happened to be, so a one-line question left most of
+ * the screen dead to the gesture.
+ *
+ * Three regions: a header that never moves, a body that scrolls when the
+ * content is taller than the space, and a footer for the actions. The footer
+ * is what makes the buttons travel with the card during a swipe — they used to
+ * live in a fixed dock outside the animated subtree, which meant the card flew
+ * away and left its own controls behind.
+ *
+ * Also used for the lookahead card behind the current one, which is why the
+ * handlers arrive as rendered nodes rather than callbacks.
+ */
+export function QuestionFace({
+  question,
+  body,
+  footer,
+}: {
+  question: QuestionType;
+  /** Extra content inside the scrolling region, below the explanation. */
+  body?: React.ReactNode;
+  /** Pinned to the bottom of the card, always visible. */
+  footer?: React.ReactNode;
+}) {
   const icon = getCategoryIcon(question.id, question.categoria);
 
-  const renderAnswerButtons = () => {
-    if (question.tipo === 'sim_nao') {
-      return (
-        <div className="flex gap-3">
-          <button
-            onClick={() => onAnswer('sim')}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-lg text-lg transition-colors active:scale-95 transform"
-            style={{ minHeight: '56px' }}
-          >
-            Sim
-          </button>
-          <button
-            onClick={() => onAnswer('nao')}
-            className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-4 px-6 rounded-lg text-lg transition-colors active:scale-95 transform"
-            style={{ minHeight: '56px' }}
-          >
-            Não
-          </button>
-        </div>
-      );
-    }
-
-    if (question.tipo === 'selecao_unica') {
-      return (
-        <div className="space-y-3">
-          {Object.entries(question.respostas).map(([key, value]) => (
-            <button
-              key={key}
-              onClick={() => onAnswer(key)}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg text-lg transition-colors text-left active:scale-95 transform"
-              style={{ minHeight: '56px' }}
-            >
-              {value.label || key}
-            </button>
-          ))}
-        </div>
-      );
-    }
-
-    if (question.tipo === 'informativo') {
-      const nextKey = Object.keys(question.respostas)[0];
-      return (
-        <button
-          onClick={() => onAnswer(nextKey)}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg text-lg transition-colors active:scale-95 transform"
-          style={{ minHeight: '56px' }}
-        >
-          Continuar
-        </button>
-      );
-    }
-
-    return null;
-  };
-
   return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -20 }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
-        className="w-full max-w-2xl mx-auto"
-      >
-        {/* Content area with padding for bottom dock on mobile */}
-        <div className="p-4 md:p-6 pb-28 md:pb-6">
-          <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
-            {/* Question header with icon */}
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
-                {icon}
-              </div>
-              <div className="flex-1 space-y-3">
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-                  {question.pergunta}
-                </h2>
-                {question.explicacao && (
-                  <p className="text-gray-600 text-base whitespace-pre-line">
-                    {question.explicacao}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Answer buttons - desktop only */}
-            <div className="hidden md:block pt-6">
-              {renderAnswerButtons()}
-            </div>
-          </div>
-        </div>
-      </motion.div>
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-lg">
+      <div className="flex flex-shrink-0 items-start gap-4 p-5 pb-4 md:p-8 md:pb-5">
+        {/*
+         * Icon swap: the icon cross-fades through blur when the category
+         * changes, rather than cutting. Keyed on the icon identity so it only
+         * replays when the category actually moves.
+         */}
+        <motion.div
+          key={question.categoria ?? question.id}
+          initial={{ opacity: 0, filter: `blur(${BLUR.small}px)` }}
+          animate={{ opacity: 1, filter: 'blur(0px)' }}
+          transition={{ duration: DURATION.fast, ease: EASE_KEYWORD.inOut }}
+          className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600"
+        >
+          {icon}
+        </motion.div>
+        <h2 className="flex-1 text-xl font-bold text-gray-900 md:text-2xl">
+          {question.pergunta}
+        </h2>
+      </div>
 
       {/*
-        Fixed bottom dock on mobile. Deliberately a sibling of the animated
-        motion.div, not a child: a transformed ancestor becomes the containing
-        block for position:fixed descendants, so nesting it would make the dock
-        slide with the question and snap back when the transform is removed.
-      */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
-        {renderAnswerButtons()}
+       * min-h-0 is load-bearing. A flex child defaults to min-height:auto,
+       * which refuses to shrink below its content — the region would grow past
+       * the card and push the footer off screen instead of scrolling.
+       */}
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 pb-4 md:px-8">
+        {question.explicacao && (
+          <p className="whitespace-pre-line text-base text-gray-600">
+            {question.explicacao}
+          </p>
+        )}
+        {body}
       </div>
-    </>
+
+      {footer && (
+        <div className="flex-shrink-0 border-t border-gray-100 p-5 md:p-8 md:pt-5">
+          {footer}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Variants are shared by every exit path so that tapping "Sim" and swiping
+ * right produce the same motion. If the button faded while the swipe slid,
+ * the user would be learning two languages for one action.
+ *
+ * `custom` carries the committed direction, supplied by AnimatePresence at
+ * the moment the card is removed.
+ */
+const cardVariants = {
+  enter: (enterFrom: 'left' | 'right') => ({
+    opacity: 0,
+    x: enterFrom === 'right' ? DISTANCE.base : -DISTANCE.base,
+    filter: `blur(${BLUR.medium}px)`,
+  }),
+  center: {
+    opacity: 1,
+    x: 0,
+    filter: 'blur(0px)',
+    transition: { duration: DURATION.fast, ease: EASE.smoothOut },
+  },
+  exit: (direction: 'left' | 'right' | 'neutral') => ({
+    opacity: 0,
+    x:
+      direction === 'right'
+        ? `${SWIPE.exitX}vw`
+        : direction === 'left'
+          ? `-${SWIPE.exitX}vw`
+          : 0,
+    filter: `blur(${BLUR.medium}px)`,
+    transition: { duration: DURATION.fast, ease: EASE.smoothOut },
+  }),
+};
+
+export function Question({
+  question,
+  onAnswer,
+  enterFrom = 'right',
+  onDragProgress,
+}: QuestionProps) {
+  const canSwipe = question.tipo === 'sim_nao';
+
+  /*
+   * Where the controls sit depends only on how many there are.
+   *
+   * Two buttons (sim/não) or one ("Continuar") pin to the footer, always
+   * visible — that is the Tinder shape, and for a swipeable question the
+   * buttons and the gesture need to be reachable at the same moment.
+   *
+   * A `selecao_unica` can carry eight options (P8_1). Pinned, they would eat
+   * the whole card and leave the question itself with nothing, so those ride
+   * in the scrolling body instead.
+   */
+  const controls = <AnswerButtons question={question} onAnswer={onAnswer} />;
+  const inFooter = question.tipo !== 'selecao_unica';
+
+  return (
+    <motion.div
+      custom={enterFrom}
+      variants={cardVariants}
+      initial="enter"
+      animate="center"
+      exit="exit"
+      /*
+       * `relative z-[100]` keeps the live card above the lookahead. CardStack
+       * sets perspective but leaves transform-style flat, so depth does not
+       * decide paint order — z-index does, and the lookahead is an absolutely
+       * positioned card at z-index 99. Without a layer of its own, this card is
+       * an unpositioned block and paints underneath: the blurred preview would
+       * cover the question being answered from the first pixel of the drag.
+       */
+      className="relative z-[100] mx-auto h-full w-full max-w-2xl"
+    >
+      <SwipeCard
+        enabled={canSwipe}
+        leftLabel="NÃO"
+        rightLabel="SIM"
+        onCommit={(direction) => onAnswer(direction === 'right' ? 'sim' : 'nao')}
+        onDragProgress={onDragProgress}
+      >
+        <QuestionFace
+          question={question}
+          body={inFooter ? undefined : controls}
+          footer={inFooter ? controls : undefined}
+        />
+      </SwipeCard>
+    </motion.div>
   );
 }

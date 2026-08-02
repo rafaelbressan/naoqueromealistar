@@ -1,21 +1,73 @@
+import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Question } from '../components/Question';
 import { Result } from '../components/Result';
 
-// Mock framer-motion to avoid animation issues in tests
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({
-      children,
-      ...props
-    }: {
-      children: React.ReactNode;
-      [key: string]: any;
-    }) => <div {...props}>{children}</div>,
-  },
-  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
+/**
+ * Mock framer-motion so these tests assert markup rather than animation.
+ *
+ * The motion-only props have to be stripped, not just spread: passing
+ * `variants` or a MotionValue-bearing `style` straight to a DOM node makes
+ * React throw. Anything the components actually read at render time
+ * (useMotionValue, useTransform, useReducedMotion) gets a inert stand-in.
+ *
+ * Motion behaviour is covered where it can be tested honestly:
+ * tests/swipe.test.ts for the commit rule, tests/motion-tokens.test.ts for the
+ * scale, tests/containing-block.test.tsx against the real library.
+ */
+vi.mock('framer-motion', () => {
+  const MOTION_PROPS = new Set([
+    'initial', 'animate', 'exit', 'variants', 'transition', 'custom',
+    'whileHover', 'whileTap', 'whileDrag', 'whileFocus', 'whileInView',
+    'drag', 'dragConstraints', 'dragElastic', 'dragDirectionLock',
+    'dragMomentum', 'onDrag', 'onDragEnd', 'onDragStart', 'layout', 'layoutId',
+  ]);
+
+  const stripMotionProps = (props: Record<string, any>) => {
+    const clean: Record<string, any> = {};
+    for (const [key, value] of Object.entries(props)) {
+      if (MOTION_PROPS.has(key)) continue;
+      // style may hold MotionValues, which React cannot render.
+      if (key === 'style' && value) {
+        clean.style = Object.fromEntries(
+          Object.entries(value).filter(([, v]) => typeof v !== 'object')
+        );
+        continue;
+      }
+      clean[key] = value;
+    }
+    return clean;
+  };
+
+  const makeComponent = (tag: string) =>
+    function MockMotion({ children, ...props }: { children?: React.ReactNode; [key: string]: any }) {
+      return React.createElement(tag, stripMotionProps(props), children);
+    };
+
+  return {
+    motion: new Proxy({} as Record<string, any>, {
+      get: (target, tag: string) => {
+        if (!target[tag]) target[tag] = makeComponent(tag);
+        return target[tag];
+      },
+    }),
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    useMotionValue: (initial: number) => ({
+      get: () => initial,
+      set: () => {},
+      on: () => () => {},
+      onChange: () => () => {},
+    }),
+    useTransform: () => ({
+      get: () => 0,
+      set: () => {},
+      on: () => () => {},
+      onChange: () => () => {},
+    }),
+    useReducedMotion: () => false,
+  };
+});
 
 describe('Question Component', () => {
   const simNaoQuestion = {
@@ -61,25 +113,30 @@ describe('Question Component', () => {
       expect(screen.getByText('Nasceu mulher e se identifica como mulher')).toBeInTheDocument();
     });
 
-    it('renders Sim and Não buttons', () => {
+    /*
+     * getByText, not getAllByText[0]. The buttons used to render twice — once
+     * in the card for desktop, once in the fixed mobile dock — and the indirect
+     * lookup existed only to tolerate that. There is one set now, inside the
+     * card, so the singular query is the assertion: an accidental duplicate
+     * fails here instead of being silently indexed past.
+     */
+    it('renders exactly one Sim and one Não button', () => {
       render(<Question question={simNaoQuestion} onAnswer={vi.fn()} />);
-      // Buttons render twice (desktop + mobile), use getAllByText
-      expect(screen.getAllByText('Sim').length).toBeGreaterThan(0);
-      expect(screen.getAllByText('Não').length).toBeGreaterThan(0);
+      expect(screen.getByText('Sim')).toBeInTheDocument();
+      expect(screen.getByText('Não')).toBeInTheDocument();
     });
 
     it('calls onAnswer with "sim" when Sim is clicked', () => {
       const onAnswer = vi.fn();
       render(<Question question={simNaoQuestion} onAnswer={onAnswer} />);
-      // Click the first Sim button found
-      fireEvent.click(screen.getAllByText('Sim')[0]);
+      fireEvent.click(screen.getByText('Sim'));
       expect(onAnswer).toHaveBeenCalledWith('sim');
     });
 
     it('calls onAnswer with "nao" when Não is clicked', () => {
       const onAnswer = vi.fn();
       render(<Question question={simNaoQuestion} onAnswer={onAnswer} />);
-      fireEvent.click(screen.getAllByText('Não')[0]);
+      fireEvent.click(screen.getByText('Não'));
       expect(onAnswer).toHaveBeenCalledWith('nao');
     });
   });
@@ -88,15 +145,15 @@ describe('Question Component', () => {
     it('renders all option buttons with labels', () => {
       render(<Question question={selecaoQuestion} onAnswer={vi.fn()} />);
       // Should show labels, not keys
-      expect(screen.getAllByText('Opção A').length).toBeGreaterThan(0);
-      expect(screen.getAllByText('Opção B').length).toBeGreaterThan(0);
-      expect(screen.getAllByText('Nenhuma').length).toBeGreaterThan(0);
+      expect(screen.getByText('Opção A')).toBeInTheDocument();
+      expect(screen.getByText('Opção B')).toBeInTheDocument();
+      expect(screen.getByText('Nenhuma')).toBeInTheDocument();
     });
 
     it('calls onAnswer with selected key', () => {
       const onAnswer = vi.fn();
       render(<Question question={selecaoQuestion} onAnswer={onAnswer} />);
-      fireEvent.click(screen.getAllByText('Opção A')[0]);
+      fireEvent.click(screen.getByText('Opção A'));
       expect(onAnswer).toHaveBeenCalledWith('A');
     });
   });
@@ -104,13 +161,13 @@ describe('Question Component', () => {
   describe('informativo type', () => {
     it('renders Continuar button', () => {
       render(<Question question={informativoQuestion} onAnswer={vi.fn()} />);
-      expect(screen.getAllByText('Continuar').length).toBeGreaterThan(0);
+      expect(screen.getByText('Continuar')).toBeInTheDocument();
     });
 
     it('calls onAnswer with first key on Continuar', () => {
       const onAnswer = vi.fn();
       render(<Question question={informativoQuestion} onAnswer={onAnswer} />);
-      fireEvent.click(screen.getAllByText('Continuar')[0]);
+      fireEvent.click(screen.getByText('Continuar'));
       expect(onAnswer).toHaveBeenCalledWith('continuar');
     });
   });

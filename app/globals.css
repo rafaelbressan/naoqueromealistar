@@ -12,6 +12,250 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+ * Motion tokens
+ *
+ * Single source of truth for every animation in the app. Scale adapted from
+ * transitions.dev; the stack and swipe groups are derived from amicro's
+ * CardTimeMachine. Mirrored in lib/motion.ts for Framer Motion, which needs
+ * numbers rather than var() — tests/motion-tokens.test.ts asserts the two
+ * stay in sync.
+ *
+ * Pick a token by its USAGE, not by the nearest number. A 300ms modal close
+ * maps to --duration-quick (150ms) because both are "modal close".
+ *
+ * Opening is slower than closing: opening presents, closing gets out of the way.
+ * ------------------------------------------------------------------------- */
+
+:root {
+  /* Durations */
+  --duration-stagger: 40ms;      /* per-item stagger offset */
+  --duration-micro: 80ms;        /* button press, tooltip delay, shake segment */
+  --duration-quick: 150ms;       /* modal/dropdown close, text swap */
+  --duration-fast: 250ms;        /* icon swap, dropdown/modal open, card change */
+  --duration-medium: 350ms;      /* panel close, toast close */
+  --duration-slow: 400ms;        /* panel open, progress bar */
+  --duration-very-slow: 500ms;   /* emphasis moments, result reveal */
+
+  /* Easings */
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: ease-in-out;
+  --ease-out: ease-out;
+  --ease-linear: linear;
+  --ease-bounce: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --ease-bounce-strong: cubic-bezier(0.34, 3.85, 0.64, 1);
+
+  /* Distances — where a surface animates FROM (it always settles at 0) */
+  --distance-micro: 4px;
+  --distance-small: 6px;
+  --distance-base: 8px;
+  --distance-medium: 12px;
+  --distance-large: 30px;
+
+  /* Scales — where a surface animates FROM (it always settles at 1) */
+  --scale-large: 0.96;
+  --scale-medium: 0.97;
+  --scale-small: 0.98;
+  --scale-tiny: 0.99;
+
+  /* Blur — where a surface animates FROM (it always settles at 0) */
+  --blur-small: 2px;
+  --blur-medium: 3px;
+  --blur-large: 8px;
+
+  /* Card stack */
+  --stack-perspective: 800px;
+  --stack-z-step: -60px;
+  --stack-y-step: -12px;
+  --stack-rotate-step: 2deg;
+  --stack-opacity-step: 0.2;
+
+  /* Swipe */
+  --swipe-commit-x: 160px;
+  --swipe-commit-v: 900;
+  --swipe-min-flick-x: 56px;
+  --swipe-rotate-max: 12deg;
+  --swipe-exit-x: 140vw;
+}
+
+/*
+ * Reduced motion strips decoration, never function. The swipe gesture keeps
+ * working here — it is an input method, not an ornament. What goes away is
+ * rotation, depth, blur and stagger.
+ *
+ * tests/motion-tokens.test.ts must read the :root block above and ignore
+ * this one.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-stagger: 0ms;
+    --duration-micro: 0ms;
+    --duration-quick: 0ms;
+    --duration-fast: 0ms;
+    --duration-medium: 0ms;
+    --duration-slow: 0ms;
+    --duration-very-slow: 0ms;
+
+    --stack-rotate-step: 0deg;
+    --swipe-rotate-max: 0deg;
+
+    --blur-small: 0px;
+    --blur-medium: 0px;
+    --blur-large: 0px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Button interactions
+ *
+ * Two variants because the two button families want different things:
+ *
+ *   .t-btn       primary actions — hover lift plus press scale
+ *   .t-btn-icon  icon and nav buttons — press only. A 4px lift on a 44px
+ *                icon button inside a fixed navbar reads as jitter, not
+ *                polish.
+ *
+ * Both enumerate their transition properties on purpose. `transition: all`
+ * would let unrelated style changes ride along for free.
+ * ------------------------------------------------------------------------- */
+
+.t-btn,
+.t-btn-icon {
+  /*
+   * The 44px floor lives here, not at the call sites. It used to be an inline
+   * `style={{ minWidth: 44, minHeight: 44 }}` repeated at every button; any
+   * caller that forgot it shipped a sub-44px tap target with nothing to catch
+   * it. Owning the constraint in the class means you cannot opt out by
+   * forgetting.
+   */
+  min-height: 44px;
+  min-width: 44px;
+  transition:
+    background-color var(--duration-quick) var(--ease-smooth-out),
+    color var(--duration-quick) var(--ease-smooth-out),
+    transform var(--duration-quick) var(--ease-smooth-out),
+    box-shadow var(--duration-quick) var(--ease-smooth-out);
+}
+
+/*
+ * will-change is scoped to the interaction, not declared permanently.
+ * Unscoped, it hands every button in the app its own compositor layer for the
+ * lifetime of the page — on the mid-range Android this quiz targets, GPU layer
+ * memory is the scarce resource, and the browser already promotes an element
+ * for the duration of a transform transition without being asked.
+ */
+.t-btn:hover,
+.t-btn:active,
+.t-btn-icon:hover,
+.t-btn-icon:active {
+  will-change: transform;
+}
+
+/*
+ * Hover effects only where hovering is real. On touch, :hover sticks after
+ * a tap, so an unguarded lift leaves the last-pressed button floating.
+ */
+@media (hover: hover) {
+  .t-btn:hover:not(:disabled) {
+    transform: translateY(calc(-1 * var(--distance-micro)));
+  }
+}
+
+/*
+ * Press is faster than release (--duration-micro, not --duration-quick).
+ * Matching them makes the button feel rubbery: the finger is already gone
+ * before the surface acknowledges it.
+ */
+.t-btn:active:not(:disabled),
+.t-btn-icon:active:not(:disabled) {
+  transform: scale(var(--scale-large));
+  transition-duration: var(--duration-micro);
+}
+
+.t-btn:disabled,
+.t-btn-icon:disabled {
+  transform: none;
+}
+
+/*
+ * The ring cannot come from currentColor. Every .t-btn call site is a solid
+ * fill with text-white, so currentColor resolves to white, and outline-offset
+ * pushes the ring off the button onto the white card or dock behind it —
+ * white on white. That left the entire non-gesture answer path with no visible
+ * focus at all.
+ *
+ * A fixed dark ring plus a light halo reads on both the coloured fill and
+ * whatever sits behind it.
+ */
+.t-btn:focus-visible,
+.t-btn-icon:focus-visible {
+  outline: 2px solid #1e293b;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-btn,
+  .t-btn:hover,
+  .t-btn:active,
+  .t-btn-icon,
+  .t-btn-icon:active {
+    transform: none;
+  }
+}
+
+/*
+ * Nudge a leading icon toward where the control is going. Applied to the back
+ * chevron; the disabled guard matters because a nav button that animates when
+ * it cannot act is lying about being available.
+ */
+.t-nudge-left > svg {
+  transition: transform var(--duration-quick) var(--ease-smooth-out);
+}
+
+@media (hover: hover) {
+  .t-nudge-left:hover:not(:disabled) > svg {
+    transform: translateX(calc(-1 * var(--distance-micro)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-nudge-left > svg,
+  .t-nudge-left:hover > svg {
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Staggered line reveal — the landing page's entrance.
+ *
+ * CSS rather than Framer Motion so the landing can stay a server component.
+ * The h1 is the LCP candidate; making its visibility depend on a JS bundle
+ * arriving is the single most expensive thing this page could do.
+ *
+ * `backwards` fill is what makes the stagger safe: the hidden state applies
+ * only during the delay, and the resting state is the element's natural one.
+ * If animations never run — reduced motion, an old engine, CSS that failed to
+ * load — the text is simply visible. Content is never gated on the animation.
+ * ------------------------------------------------------------------------- */
+
+@keyframes reveal-line {
+  from {
+    opacity: 0;
+    transform: translateY(var(--distance-medium));
+  }
+}
+
+.reveal-line {
+  animation: reveal-line var(--duration-fast) var(--ease-in-out) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-line {
+    animation: none;
+  }
+}
+
 body {
   color: var(--foreground);
   background: var(--background);

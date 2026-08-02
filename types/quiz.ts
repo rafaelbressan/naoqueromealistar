@@ -39,9 +39,28 @@ export interface QuizTree {
   [questionId: string]: Question;
 }
 
+/**
+ * Which way the user last moved through the tree. Drives the direction of the
+ * card transition: without it, going back animates identically to going
+ * forward and the motion lies about the navigation.
+ */
+export type NavDirection = 'forward' | 'back';
+
 export interface QuizState {
   currentQuestionId: string | null;
   history: string[];
   answers: Map<string, string>;
   result: QuestionResponse | null;
+  lastDirection: NavDirection | null;
 }
+
+/**
+ * Where an answer would lead, resolved without taking it.
+ *
+ * A discriminated union because plenty of yes/no nodes end the quiz outright
+ * rather than pointing at another question — the lookahead card has to know
+ * which of the two it is rendering.
+ */
+export type PeekResult =
+  | { kind: 'question'; question: Question }
+  | { kind: 'result'; result: QuestionResponse };
